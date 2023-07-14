@@ -5,7 +5,7 @@ Drag and drop your Trados regex files (.sdlqasettings) into an excel spreadsheet
 
 Repeat above step for the regex files you want to merge.
 
-Open regex combiner and enable macro features if warned.
+Open regex combiner.xlsm file and enable macro features if warned.
 
 Copy the content under below columns in your separate regex files you opened in excel before and paste them under the same columns in the regex combiner.
 
