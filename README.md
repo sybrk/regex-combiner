@@ -3,8 +3,11 @@ Regex combiner for Trados regex files
 
 # Guide for version 1.7
 Changes in version 1.7:
+
 ID column has been hidden. Regex IDs will be autosorted by macro now. Users do not need to worry about ID sorting.
+
 Users will be warned if Description field has no value or duplicate values. regex file will not be created until these issues are fixed. This is to help avoid issues in Trados.
+
 Users can use drop-down to choose the correct values for IgnoreCase and RuleCondition columns.
 
 Drag and drop your Trados regex files (.sdlqasettings) into an excel spreadsheet. Ignore the warning and click ‘Yes’. Choose the first option (As an XML table) and click ‘OK’. Ignore the schema warning and click ‘OK’ again.
