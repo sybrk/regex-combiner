@@ -1,14 +1,15 @@
 # regex-combiner
 Regex combiner for Trados regex files
 
-# Guide for version 1.7
-Changes in version 1.7:
+# Changes in version 1.7:
 
 ID column has been hidden. Regex IDs will be autosorted by macro now. Users do not need to worry about ID sorting.
 
 Users will be warned if Description field has no value or duplicate values. regex file will not be created until these issues are fixed. This is to help avoid issues in Trados.
 
 Users can use drop-down to choose the correct values for IgnoreCase and RuleCondition columns.
+
+## Guide for version 1.7:
 
 Drag and drop your Trados regex files (.sdlqasettings) into an excel spreadsheet. Ignore the warning and click ‘Yes’. Choose the first option (As an XML table) and click ‘OK’. Ignore the schema warning and click ‘OK’ again.
 
@@ -24,7 +25,7 @@ Click on the Combine button at top of of the excel file. If you have emtpy cells
 
 You fill find your combined regex file under the same folder of this excel file. It’s name will be combined.sdlqasettings. You can import this new file in Studio QA settings under regex profiles.
 
-# Guide for version 1.6
+## Guide for version 1.6
 
 Drag and drop your Trados regex files (.sdlqasettings) into an excel spreadsheet. Ignore the warning and click ‘Yes’. Choose the first option (As an XML table) and click ‘OK’. Ignore the schema warning and click ‘OK’ again.
 
