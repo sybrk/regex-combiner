@@ -1,0 +1,78 @@
+Sub combine()
+'
+' combiner macro.
+'
+
+'
+    'Declare variables
+    Dim colRange As Range
+    Dim cell As Range
+    
+    'Set the column range to be highlighted
+    Set colRange = Range("E7:E" & Range("F" & Rows.Count).End(xlUp).Row)
+    
+    'Reset the colors to avoid having fixed cells staying highlighted.
+    For Each cell In colRange
+    cell.Interior.ColorIndex = xlNone
+    
+    Next cell
+    
+    'Loop through each cell in the column
+    For Each cell In colRange
+    
+    'If the cell is empty, highlight it in grey
+    If IsEmpty(cell) Then
+    cell.Interior.ColorIndex = 15
+    End If
+    
+    Next cell
+    
+    'Count the number of empty cells in the column
+    numEmptyCells = Application.WorksheetFunction.CountBlank(colRange)
+    
+    'Warn the user if any empty cells were found
+    If numEmptyCells > 0 Then
+    MsgBox "Empty cells were found and highlighted in grey under Descriptions column. You cannot leave description field empty. If those rows are not needed, please delete them."
+    Exit Sub
+    End If
+    
+    'Declare variables
+    Dim dictValues As Object
+    
+    'Create a dictionary to store the unique values in the column range
+    Set dictValues = CreateObject("Scripting.Dictionary")
+    
+    'Loop through each cell in the column range
+    For Each cell In colRange
+    
+    'If the value in the cell is not already in the dictionary, add it to the dictionary
+    If Not dictValues.Exists(cell.Value) Then
+    dictValues.Add cell.Value, True
+    Else
+    'If the value in the cell is already in the dictionary, then the column has duplicate values
+    cell.Interior.ColorIndex = 3 'Red
+    End If
+    
+    Next cell
+    
+    'If any duplicate values were found, display a message box warning the user. The excel file also has Conditional formatting rule finding duplicates. 
+    If dictValues.Count < colRange.Cells.Count Then
+    MsgBox "There are duplicate values under Descriptions column. They are already highlighted in red by Conditional Formatting rule. Make sure all descriptions are unique."
+    Exit Sub
+    End If
+
+    'This section handles regex ID sorting.
+    'Set the ID of first regex as regexrules0
+    Range("D7").Select
+    ActiveCell.FormulaR1C1 = "RegExRules0"
+    Range("D7").Select
+    'Autofill if user entered more then one regex.
+    If Range("D7:D" & Range("E" & Rows.Count).End(xlUp).Row).Rows.Count > 1 Then
+    Selection.autofill Destination:=Range("D7:D" & Range("E" & Rows.Count).End(xlUp).Row)
+    End If
+    
+    'Export the table as an xml file
+    ActiveWorkbook.XmlMaps("SettingsBundle_Mapping").Export _
+    ActiveWorkbook.Path & "\combined.sdlqasettings", True
+    MsgBox "Regex file created."
+End Sub
