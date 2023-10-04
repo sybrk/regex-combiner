@@ -1,5 +1,7 @@
 # regex-combiner
-Regex combiner for Trados regex files
+Regex combiner for Trados regex files. You can benefit from this tool if you want to merge multiple Trados regex files into one or want to see your regexes in an excel and keep them updated.
+
+The macro in the excel files are password protected but you can see the VBA code in the VBA.txt. You do not need to download it to use the excel files but if you want to create your own project, you might benefit from it.
 
 # Changes in version 1.7:
 
