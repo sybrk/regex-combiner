@@ -3,6 +3,12 @@ Regex combiner for Trados regex files. You can benefit from this tool if you wan
 
 The macro in the excel files are password protected but you can see the VBA code in the VBA.txt. You do not need to download it to use the excel files but if you want to create your own project, you might benefit from it.
 
+# Changes in version 1.8:
+
+Regex validation added. Cells under RegexSource and RegexTarget will be highlighted in red if they are not valid regexes.
+
+All validations messages for duplicate descriptions, empty descriptions, invalid regexes will be listed as below if any. Users can still create regex file if they click yes. Make sure all errors are false positives before creating the file.
+
 # Changes in version 1.7:
 
 ID column has been hidden. Regex IDs will be autosorted by macro now. Users do not need to worry about ID sorting.
