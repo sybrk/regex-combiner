@@ -54,6 +54,17 @@ InvalidPattern:
         ReplaceLookBehind = Replace(pattern, "?<!", "")
         ReplaceLookBehind = Replace(ReplaceLookBehind, "?<=", "")
     End Function
+    Function CaseSensitiveExists(dict As Object, key As String) As Boolean
+        Dim k As Variant
+        CaseSensitiveExists = False
+        For Each k In dict.Keys
+            If k = key Then
+            CaseSensitiveExists = True
+            Exit Function
+            End If
+        Next k
+    End Function
+
 
     Sub ExportRegexFile()
         'Set the ID of first regex as regexrules0
@@ -68,4 +79,6 @@ InvalidPattern:
         ActiveWorkbook.XmlMaps("SettingsBundle_Mapping").Export _
         ActiveWorkbook.Path & "\combined.sdlqasettings", True
     End Sub
+
+
 
