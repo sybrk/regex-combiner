@@ -1,0 +1,20 @@
+{
+    "file": {
+        "id": "",
+        "name": "",
+        "importDate": "",
+        "lastModified": "",
+        "content": {
+            "original": "",
+            "regexes": {
+                "id": {
+                    "desription": "",
+                    "ignoreCase": false,
+                    "source": "",
+                    "target": "",
+                    "ruleCondition": ""
+                }
+            }
+        }
+    }
+}
