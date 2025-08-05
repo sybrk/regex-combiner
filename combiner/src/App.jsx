@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
 import './App.css'
-import { idGenerator, readFile, xmlParser } from './utils/Util'
+import { idGenerator, newRegexFile, readFile, regexNodeBuilder, xmlParser } from './utils/Util'
+import FileSaver, { saveAs } from 'file-saver'
 
 function App() {
 
@@ -68,6 +69,29 @@ function App() {
     }
     setRegexList(tmpObj)
   }
+  const combine = () => {
+    const newFile = newRegexFile();
+    const parent = newFile.querySelector("SettingsGroup");
+    const regexCount = Object.keys(regexList).map(x => Object.keys(regexList[x]["regexes"]).length).reduce(((a,b)=> a + b),0);
+    const regexCountNode = document.createElementNS("","Setting");
+    regexCountNode.setAttribute("Id", "RegExRulesCount");
+    regexCountNode.textContent = regexCount;
+    parent.appendChild(regexCountNode)
+    let regexId = 0;
+    Object.keys(regexList).map((file, i) => {
+      Object.keys(regexList[file]["regexes"]).map((regex) => {
+        const settingNode = regexNodeBuilder(regexList[file]["regexes"][regex], regexId);
+        parent.appendChild(settingNode)
+        regexId++
+      })
+    })
+    const serialer = new XMLSerializer();
+    const serializedFile = serialer.serializeToString(newFile);
+    const fileToDownload = new File([serializedFile], "combined.sdlqasettings", {
+      type: "text/xml",
+    });
+    saveAs(fileToDownload)
+  }
   return (
     <>
       <div className='mt-5 flex flex-row justify-center gap-4 items-center'>
@@ -82,6 +106,7 @@ function App() {
             }
         </p>
         <button className="btn btn-success rounded-2xl" onClick={createNew}>+</button>
+        <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
       </div>
 
       <div className="">
