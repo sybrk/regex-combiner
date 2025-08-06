@@ -1,12 +1,29 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import './App.css'
 import { idGenerator, newRegexFile, readFile, regexNodeBuilder, xmlParser } from './utils/Util'
-import FileSaver, { saveAs } from 'file-saver'
+import { saveAs } from 'file-saver'
+import EditingWithTextarea from './components/EditingWithTextarea'
+
+
 
 function App() {
 
+  const initialRows = [
+    { description: "hello", ignoreCase: "true", source: "sample", target: "target", condition: "SourceTarget" },
+    { description: "hello2", ignoreCase: "false", source: "aasdf", target: "tarasdafget", condition: "SourceTarget" },
+  ]
   const [regexList, setRegexList] = useState({})
+  const [rows, setRows] = useState(initialRows)
+
+  const columns = [
+    { key: 'description', name: 'Description', editable: true },
+    { key: 'ignoreCase', name: 'IgnoreCase' },
+    { key: 'source', name: 'Source' },
+    { key: 'target', name: 'Target' },
+    { key: 'condition', name: 'Condition' },
+  ];
+
 
   const importRegex = async () => {
     const tmpObj = { ...regexList }
@@ -52,16 +69,16 @@ function App() {
 
   const createNew = () => {
     const tmpObj = { ...regexList }
-    if(tmpObj["newRegexes"] == undefined) {
+    if (tmpObj["newRegexes"] == undefined) {
       tmpObj["newRegexes"] = {
         "name": "newRegexes",
         regexes: {}
       }
     }
-    
+
     const newRegexId = Object.keys(tmpObj["newRegexes"]["regexes"]).length
     tmpObj["newRegexes"]["regexes"][newRegexId] = {
-      "description" : "",
+      "description": "",
       ignoreCase: "true",
       source: "",
       target: "",
@@ -72,8 +89,8 @@ function App() {
   const combine = () => {
     const newFile = newRegexFile();
     const parent = newFile.querySelector("SettingsGroup");
-    const regexCount = Object.keys(regexList).map(x => Object.keys(regexList[x]["regexes"]).length).reduce(((a,b)=> a + b),0);
-    const regexCountNode = document.createElementNS("","Setting");
+    const regexCount = Object.keys(regexList).map(x => Object.keys(regexList[x]["regexes"]).length).reduce(((a, b) => a + b), 0);
+    const regexCountNode = document.createElementNS("", "Setting");
     regexCountNode.setAttribute("Id", "RegExRulesCount");
     regexCountNode.textContent = regexCount;
     parent.appendChild(regexCountNode)
@@ -92,18 +109,28 @@ function App() {
     });
     saveAs(fileToDownload)
   }
+
+  const handleItemChange = useCallback((index, index2, newData) => {
+    setRegexList(prevItems => {
+      const newItems = {...prevItems};
+      newItems[index]["regexes"][index2]["description"] = newData.description
+      return newItems;
+    });
+    
+  }, []);
   return (
     <>
+      <title>Regex Combiner</title>
       <div className='mt-5 flex flex-row justify-center gap-4 items-center'>
         <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
         <button className="btn btn-primary" onClick={importRegex}>Import</button>
         <p>
           {Object.keys(regexList)
-              ?
-              Object.keys(regexList).map(x => Object.keys(regexList[x]["regexes"]).length).reduce(((a,b)=> a + b),0)
-              :
-              null
-            }
+            ?
+            Object.keys(regexList).map(x => Object.keys(regexList[x]["regexes"]).length).reduce(((a, b) => a + b), 0)
+            :
+            null
+          }
         </p>
         <button className="btn btn-success rounded-2xl" onClick={createNew}>+</button>
         <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
@@ -133,11 +160,16 @@ function App() {
                           <tr className="hover:bg-base-300" key={"regex" + j} data-file-id={file} data-regex-id={regex}>
                             <td>{regexList[file]?.name}</td>
                             <td>
-                              <textarea
+                              {/* <textarea
                                 className='textarea'
                                 data-file-id={file} data-regex-id={regex} data-field="description"
                                 onChange={handleChanges}
-                                value={regexList[file]["regexes"][regex]?.description} />
+                                value={regexList[file]["regexes"][regex]?.description} /> */}
+                              <EditingWithTextarea item={regexList[file]["regexes"][regex]}
+                                onChange={(newData) => {
+                                  handleItemChange(file, regex, newData)
+                                }
+                                } />
                             </td>
                             <td>
                               <select data-file-id={file} data-regex-id={regex} data-field="ignoreCase"
@@ -166,7 +198,7 @@ function App() {
                                 onChange={handleChanges}
                                 value={regexList[file]["regexes"][regex]?.target}
                                 disabled={regexList[file]["regexes"][regex]?.condition == "SourceOnly"}
-                                 />
+                              />
                             </td>
                             <td className=''>
                               <select data-file-id={file} data-regex-id={regex} data-field="condition"
@@ -187,12 +219,12 @@ function App() {
 
                             </td>
                             <td>
-                            <button 
-                              data-file-id={file} data-regex-id={regex}
-                              onClick={removeRegex} className="btn btn-sm rounded-2xl btn-error"
-                            >
-                              x
-                            </button>
+                              <button
+                                data-file-id={file} data-regex-id={regex}
+                                onClick={removeRegex} className="btn btn-sm rounded-2xl btn-error"
+                              >
+                                x
+                              </button>
                             </td>
                           </tr>
                         );
