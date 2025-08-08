@@ -55,3 +55,11 @@ export const regexNodeBuilder = (regexObj, id) => {
   settingNode.appendChild(regexNode)
   return settingNode;
 }
+
+export const defaultColumns = [
+  { key: 'description', name: 'Description', editable: true },
+  { key: 'ignoreCase', name: 'IgnoreCase' },
+  { key: 'source', name: 'Source' },
+  { key: 'target', name: 'Target' },
+  { key: 'condition', name: 'Condition' },
+];

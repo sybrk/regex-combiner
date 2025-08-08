@@ -1,40 +1,188 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import './App.css'
-import { idGenerator, newRegexFile, readFile, regexNodeBuilder, xmlParser } from './utils/Util'
+import { defaultColumns, idGenerator, newRegexFile, readFile, regexNodeBuilder, xmlParser } from './utils/Util'
 import { saveAs } from 'file-saver'
-import EditingWithTextarea from './components/EditingWithTextarea'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 
 
 
 function App() {
 
-  const initialRows = [
-    { description: "hello", ignoreCase: "true", source: "sample", target: "target", condition: "SourceTarget" },
-    { description: "hello2", ignoreCase: "false", source: "aasdf", target: "tarasdafget", condition: "SourceTarget" },
-  ]
+
   const [regexList, setRegexList] = useState({})
-  const [rows, setRows] = useState(initialRows)
 
-  const columns = [
-    { key: 'description', name: 'Description', editable: true },
-    { key: 'ignoreCase', name: 'IgnoreCase' },
-    { key: 'source', name: 'Source' },
-    { key: 'target', name: 'Target' },
-    { key: 'condition', name: 'Condition' },
-  ];
+  const [mydata, setMyData] = useState([])
+  const columnHelper = createColumnHelper();
+  const columns = useMemo(() => [
+    columnHelper.accessor('file', {
+      header: 'File',
+      cell: info => 
+        info.getValue()
+      ,
+    }),
+    columnHelper.accessor('description', {
+      header: 'Description',
+      cell: info => {
+        const initialValue = info.getValue()
+        const [value, setValue] = useState(initialValue)
+        const onBlur = () => {
+          table.options.meta?.updateData(info.row.index, info.column.id, value)
+        }
+        useEffect(() => {
+          setValue(initialValue)
+        }, [initialValue])
+        return (
+          <textarea
+            className='textarea'
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onBlur={onBlur} />
+        )
+      },
+    }),
+    columnHelper.accessor('ignoreCase', {
+      header: 'Ignore Case',
+      cell: info => {
+        const initialValue = info.getValue()
+        const [value, setValue] = useState(initialValue)
+        const onBlur = () => {
+          table.options.meta?.updateData(info.row.index, info.column.id, value)
+        }
+        useEffect(() => {
+          setValue(initialValue)
+        }, [initialValue])
+        return (
+          <select
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onBlur={onBlur}
+            className="select select-accent">
 
+            <option>true</option>
+            <option>false</option>
+
+          </select>
+        )
+      },
+    }),
+    columnHelper.accessor('source', {
+      header: 'Source',
+      cell: info => {
+        const initialValue = info.getValue()
+        const [value, setValue] = useState(initialValue)
+        const onBlur = () => {
+          table.options.meta?.updateData(info.row.index, info.column.id, value)
+        }
+        useEffect(() => {
+          setValue(initialValue)
+        }, [initialValue])
+        return (
+          <textarea
+            className='textarea'
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onBlur={onBlur} />
+        )
+      },
+    }),
+    columnHelper.accessor('target', {
+      header: 'Target',
+      cell: info => {
+        const initialValue = info.getValue()
+        const [value, setValue] = useState(initialValue)
+        const onBlur = () => {
+          table.options.meta?.updateData(info.row.index, info.column.id, value)
+        }
+        useEffect(() => {
+          setValue(initialValue)
+        }, [initialValue])
+        return (
+          <textarea
+            className='textarea'
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onBlur={onBlur} />
+        )
+      },
+    }),
+    columnHelper.accessor('condition', {
+      header: 'Condition',
+      cell: info => {
+        const initialValue = info.getValue()
+        const [value, setValue] = useState(initialValue)
+        const onBlur = () => {
+          table.options.meta?.updateData(info.row.index, info.column.id, value)
+        }
+        useEffect(() => {
+          setValue(initialValue)
+        }, [initialValue])
+        return (
+          <select
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            onBlur={onBlur}
+            className="select select-accent">
+
+            <option>TargetAndSource</option>
+            <option>TargetNotSource</option>
+            <option>SourceNotTarget</option>
+            <option>SourceOnly</option>
+            <option>TargetOnly</option>
+            <option>DifferentCount</option>
+            <option>GroupedSourceNotTarget</option>
+            <option>GroupedTargetAndSource</option>
+
+          </select>
+        )
+      },
+    }),
+  ], [regexList]);
+ 
+  const table = useReactTable({
+    data: mydata,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    meta: {
+      updateData: (rowIndex, columnId, value) => {
+
+        setMyData(old =>
+
+          old.map((row, index) => {
+            if (index === rowIndex) {
+              return {
+                ...old[rowIndex],
+                [columnId]: value,
+              }
+            }
+            return row
+          })
+        )
+      },
+    },
+    debugTable: true,
+  })
 
   const importRegex = async () => {
     const tmpObj = { ...regexList }
+    const arryData = []
     const files = document.getElementById("regexfiles").files
     for (let index = 0; index < files.length; index++) {
+
       const file = files[index];
       const fileRead = await readFile(file);
       const parseFile = xmlParser(fileRead.fileContent)
       const fileId = idGenerator();
       tmpObj[fileId] = {}
       tmpObj[fileId]["name"] = fileRead.fileName;
+
       tmpObj[fileId]["original"] = fileRead.fileContent;
       tmpObj[fileId]["regexes"] = {}
       let regexRules = Array.from(parseFile.querySelectorAll("RegExRule"));
@@ -48,10 +196,21 @@ function App() {
         tmpObj[fileId]["regexes"][i]["source"] = x.querySelector("RegExSource").textContent;
         tmpObj[fileId]["regexes"][i]["target"] = x.querySelector("RegExTarget").textContent;
         tmpObj[fileId]["regexes"][i]["condition"] = x.querySelector("RuleCondition").textContent;
+
+
+        const tmpArrObj = {};
+        tmpArrObj["file"] = fileRead.fileName;;
+        tmpArrObj["description"] = x.querySelector("Description").textContent;
+        tmpArrObj["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
+        tmpArrObj["source"] = x.querySelector("RegExSource").textContent;
+        tmpArrObj["target"] = x.querySelector("RegExTarget").textContent;
+        tmpArrObj["condition"] = x.querySelector("RuleCondition").textContent;
+        arryData.push(tmpArrObj);
       });
 
     }
     setRegexList(tmpObj)
+    setMyData(arryData)
   }
   const handleChanges = (e) => {
     const data = e.target.dataset;
@@ -68,7 +227,7 @@ function App() {
   }
 
   const createNew = () => {
-    const tmpObj = { ...regexList }
+    /* const tmpObj = { ...regexList }
     if (tmpObj["newRegexes"] == undefined) {
       tmpObj["newRegexes"] = {
         "name": "newRegexes",
@@ -84,7 +243,16 @@ function App() {
       target: "",
       condition: "TargetAndSource"
     }
-    setRegexList(tmpObj)
+    setRegexList(tmpObj) */
+    const newObj = {
+      file: "new regex",
+      description: "",
+      ignoreCase: "false",
+      source: "",
+      target: "",
+      condition: "TargetAndSource"
+    }
+    setMyData(old => [...old, newObj])
   }
   const combine = () => {
     const newFile = newRegexFile();
@@ -112,11 +280,11 @@ function App() {
 
   const handleItemChange = useCallback((index, index2, newData) => {
     setRegexList(prevItems => {
-      const newItems = {...prevItems};
+      const newItems = { ...prevItems };
       newItems[index]["regexes"][index2]["description"] = newData.description
       return newItems;
     });
-    
+
   }, []);
   return (
     <>
@@ -137,105 +305,49 @@ function App() {
       </div>
 
       <div className="">
-        <table className="table">
+        <table className='table'>
           <thead>
-            <tr>
-              <th>File</th>
-              <th>Description</th>
-              <th>IgnoreCase</th>
-              <th>Source</th>
-              <th>Target</th>
-              <th>Condition</th>
-              <th></th>
-            </tr>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
+                    key={header.id}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <div className="flex items-center gap-2">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      <span className="text-gray-400">
+                        {{
+                          asc: '↑',
+                          desc: '↓',
+                        }[header.column.getIsSorted()] ?? '↕'}
+                      </span>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
-          <tbody>
-            {Object.keys(regexList)
-              ? Object.keys(regexList).map((file, i) => {
-                return (
-                  <>
-                    {
-                      Object.keys(regexList[file]["regexes"]).map((regex, j) => {
-                        return (
-                          <tr className="hover:bg-base-300" key={"regex" + j} data-file-id={file} data-regex-id={regex}>
-                            <td>{regexList[file]?.name}</td>
-                            <td>
-                              {/* <textarea
-                                className='textarea'
-                                data-file-id={file} data-regex-id={regex} data-field="description"
-                                onChange={handleChanges}
-                                value={regexList[file]["regexes"][regex]?.description} /> */}
-                              <EditingWithTextarea item={regexList[file]["regexes"][regex]}
-                                onChange={(newData) => {
-                                  handleItemChange(file, regex, newData)
-                                }
-                                } />
-                            </td>
-                            <td>
-                              <select data-file-id={file} data-regex-id={regex} data-field="ignoreCase"
-                                onChange={handleChanges}
-                                value={regexList[file]["regexes"][regex]?.ignoreCase}
-                                className="select select-accent">
-
-                                <option>true</option>
-                                <option>false</option>
-
-                              </select>
-                            </td>
-                            <td className='wrap-anywhere'>
-                              <textarea
-                                className='textarea'
-                                data-file-id={file} data-regex-id={regex} data-field="source"
-                                onChange={handleChanges}
-                                value={regexList[file]["regexes"][regex]?.source}
-                                disabled={regexList[file]["regexes"][regex]?.condition == "TargetOnly"}
-                              />
-                            </td>
-                            <td className='wrap-anywhere'>
-                              <textarea
-                                className='textarea'
-                                data-file-id={file} data-regex-id={regex} data-field="target"
-                                onChange={handleChanges}
-                                value={regexList[file]["regexes"][regex]?.target}
-                                disabled={regexList[file]["regexes"][regex]?.condition == "SourceOnly"}
-                              />
-                            </td>
-                            <td className=''>
-                              <select data-file-id={file} data-regex-id={regex} data-field="condition"
-                                onChange={handleChanges}
-                                value={regexList[file]["regexes"][regex]?.condition}
-                                className="select select-accent">
-
-                                <option>TargetAndSource</option>
-                                <option>TargetNotSource</option>
-                                <option>SourceNotTarget</option>
-                                <option>SourceOnly</option>
-                                <option>TargetOnly</option>
-                                <option>DifferentCount</option>
-                                <option>GroupedSourceNotTarget</option>
-                                <option>GroupedTargetAndSource</option>
-
-                              </select>
-
-                            </td>
-                            <td>
-                              <button
-                                data-file-id={file} data-regex-id={regex}
-                                onClick={removeRegex} className="btn btn-sm rounded-2xl btn-error"
-                              >
-                                x
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    }
-                  </>
-                )
-
-
-              })
-              : null}
+          <tbody className="bg-white divide-y divide-gray-200">
+            {table.getRowModel().rows.map(row => {
+              console.log("myrow", row)
+              return (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  {row.getVisibleCells().map(cell => (
+                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
