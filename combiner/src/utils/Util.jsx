@@ -33,15 +33,15 @@ export const newRegexFile = () => {
 }
 
 export const regexNodeBuilder = (regexObj, id) => {
-  const settingNode = document.createElementNS("","Setting");
+  const settingNode = document.createElementNS("", "Setting");
   settingNode.setAttribute("Id", id)
-  const regexNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx","RegExRule");
+  const regexNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RegExRule");
   regexNode.setAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance")
   const descriptionNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "Description");
-  const caseNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx","IgnoreCase");
-  const sourceNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx","RegExSource");
-  const targetNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx","RegExTarget");
-  const conditionNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx","RuleCondition");
+  const caseNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "IgnoreCase");
+  const sourceNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RegExSource");
+  const targetNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RegExTarget");
+  const conditionNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RuleCondition");
   descriptionNode.textContent = regexObj.description;
   caseNode.textContent = regexObj.ignoreCase;
   sourceNode.textContent = regexObj.source;
@@ -56,10 +56,26 @@ export const regexNodeBuilder = (regexObj, id) => {
   return settingNode;
 }
 
-export const defaultColumns = [
-  { key: 'description', name: 'Description', editable: true },
-  { key: 'ignoreCase', name: 'IgnoreCase' },
-  { key: 'source', name: 'Source' },
-  { key: 'target', name: 'Target' },
-  { key: 'condition', name: 'Condition' },
-];
+export const regexParser = async (filesArr) => {
+  const regexObjArr = []
+  for (let index = 0; index < filesArr.length; index++) {
+    const file = filesArr[index];
+    const fileRead = await readFile(file);
+    const parseFile = xmlParser(fileRead.fileContent)
+    let regexRules = Array.from(parseFile.querySelectorAll("RegExRule"));
+    //console.log("regexrules", regexRules)
+    regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement.getAttribute('Id')))
+    regexRules.map((x, i) => {
+
+      const tmpArrObj = {};
+      tmpArrObj["file"] = fileRead.fileName;;
+      tmpArrObj["description"] = x.querySelector("Description").textContent;
+      tmpArrObj["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
+      tmpArrObj["source"] = x.querySelector("RegExSource").textContent;
+      tmpArrObj["target"] = x.querySelector("RegExTarget").textContent;
+      tmpArrObj["condition"] = x.querySelector("RuleCondition").textContent;
+      regexObjArr.push(tmpArrObj);
+    });
+  }
+  return regexObjArr
+}

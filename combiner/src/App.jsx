@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import './App.css'
-import { defaultColumns, idGenerator, newRegexFile, readFile, regexNodeBuilder, xmlParser } from './utils/Util'
+import { newRegexFile, regexNodeBuilder, regexParser } from './utils/Util'
 import { saveAs } from 'file-saver'
 import {
   createColumnHelper,
@@ -10,213 +10,113 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import EditableTextarea from './components/EditableTextarea'
+import EditableSelect from './components/EditableSelect'
+import TableBody from './components/TableBody'
 
 
 
 function App() {
 
 
-  const [regexList, setRegexList] = useState({})
+  const [regexList, setRegexList] = useState([])
+  
 
-  const [mydata, setMyData] = useState([])
+  const updateData = useCallback((rowIndex, columnId, value) => {
+    
+    setRegexList(old =>
+      old.map((row, index) => {
+        if (index === rowIndex) {
+          return {
+            ...old[rowIndex],
+            [columnId]: value,
+          };
+        }
+        return row;
+      })
+    );
+  }, []);
+
+  
+
   const columnHelper = createColumnHelper();
+  // Create cell renderers as useCallback hooks
+  const createTextareaCell = useCallback((columnId) => (info) => (
+    <EditableTextarea
+      key={`${info.row.index}-${columnId}`} // Add key for better React reconciliation
+      value={info.getValue()}
+      rowIndex={info.row.index}
+      columnId={columnId}
+      updateData={updateData}
+    />
+  ), [updateData]);
+
+  const createSelectCell = useCallback((columnId, options) => (info) => (
+    <EditableSelect
+      key={`${info.row.index}-${columnId}`}
+      value={info.getValue()}
+      rowIndex={info.row.index}
+      columnId={columnId}
+      updateData={updateData}
+      options={options}
+    />
+  ), [updateData]);
+
   const columns = useMemo(() => [
     columnHelper.accessor('file', {
       header: 'File',
-      cell: info => 
-        info.getValue()
-      ,
+      cell: info => info.getValue(),
     }),
     columnHelper.accessor('description', {
       header: 'Description',
-      cell: info => {
-        const initialValue = info.getValue()
-        const [value, setValue] = useState(initialValue)
-        const onBlur = () => {
-          table.options.meta?.updateData(info.row.index, info.column.id, value)
-        }
-        useEffect(() => {
-          setValue(initialValue)
-        }, [initialValue])
-        return (
-          <textarea
-            className='textarea'
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur} />
-        )
-      },
+      cell: createTextareaCell('description'),
     }),
     columnHelper.accessor('ignoreCase', {
       header: 'Ignore Case',
-      cell: info => {
-        const initialValue = info.getValue()
-        const [value, setValue] = useState(initialValue)
-        const onBlur = () => {
-          table.options.meta?.updateData(info.row.index, info.column.id, value)
-        }
-        useEffect(() => {
-          setValue(initialValue)
-        }, [initialValue])
-        return (
-          <select
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur}
-            className="select select-accent">
-
-            <option>true</option>
-            <option>false</option>
-
-          </select>
-        )
-      },
+      cell: createSelectCell('ignoreCase', ['true', 'false']),
     }),
     columnHelper.accessor('source', {
       header: 'Source',
-      cell: info => {
-        const initialValue = info.getValue()
-        const [value, setValue] = useState(initialValue)
-        const onBlur = () => {
-          table.options.meta?.updateData(info.row.index, info.column.id, value)
-        }
-        useEffect(() => {
-          setValue(initialValue)
-        }, [initialValue])
-        return (
-          <textarea
-            className='textarea'
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur} />
-        )
-      },
+      cell: createTextareaCell('source'),
     }),
     columnHelper.accessor('target', {
       header: 'Target',
-      cell: info => {
-        const initialValue = info.getValue()
-        const [value, setValue] = useState(initialValue)
-        const onBlur = () => {
-          table.options.meta?.updateData(info.row.index, info.column.id, value)
-        }
-        useEffect(() => {
-          setValue(initialValue)
-        }, [initialValue])
-        return (
-          <textarea
-            className='textarea'
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur} />
-        )
-      },
+      cell: createTextareaCell('target'),
     }),
     columnHelper.accessor('condition', {
       header: 'Condition',
-      cell: info => {
-        const initialValue = info.getValue()
-        const [value, setValue] = useState(initialValue)
-        const onBlur = () => {
-          table.options.meta?.updateData(info.row.index, info.column.id, value)
-        }
-        useEffect(() => {
-          setValue(initialValue)
-        }, [initialValue])
-        return (
-          <select
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onBlur={onBlur}
-            className="select select-accent">
-
-            <option>TargetAndSource</option>
-            <option>TargetNotSource</option>
-            <option>SourceNotTarget</option>
-            <option>SourceOnly</option>
-            <option>TargetOnly</option>
-            <option>DifferentCount</option>
-            <option>GroupedSourceNotTarget</option>
-            <option>GroupedTargetAndSource</option>
-
-          </select>
-        )
-      },
+      cell: createSelectCell('condition', [
+        'TargetAndSource',
+        'TargetNotSource',
+        'SourceNotTarget',
+        'SourceOnly',
+        'TargetOnly',
+        'DifferentCount',
+        'GroupedSourceNotTarget',
+        'GroupedTargetAndSource'
+      ]),
     }),
-  ], [regexList]);
- 
+  ], [createTextareaCell, createSelectCell]);
+
   const table = useReactTable({
-    data: mydata,
+    data: regexList,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     meta: {
-      updateData: (rowIndex, columnId, value) => {
-
-        setMyData(old =>
-
-          old.map((row, index) => {
-            if (index === rowIndex) {
-              return {
-                ...old[rowIndex],
-                [columnId]: value,
-              }
-            }
-            return row
-          })
-        )
-      },
+      updateData,
     },
-    debugTable: true,
+    debugTable: true
   })
 
+
+
   const importRegex = async () => {
-    const tmpObj = { ...regexList }
-    const arryData = []
+
     const files = document.getElementById("regexfiles").files
-    for (let index = 0; index < files.length; index++) {
+    const regexArr = await regexParser(files)
+    setRegexList(regexArr)
 
-      const file = files[index];
-      const fileRead = await readFile(file);
-      const parseFile = xmlParser(fileRead.fileContent)
-      const fileId = idGenerator();
-      tmpObj[fileId] = {}
-      tmpObj[fileId]["name"] = fileRead.fileName;
-
-      tmpObj[fileId]["original"] = fileRead.fileContent;
-      tmpObj[fileId]["regexes"] = {}
-      let regexRules = Array.from(parseFile.querySelectorAll("RegExRule"));
-      console.log("regexrules", regexRules)
-      regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement.getAttribute('Id')))
-
-      regexRules.map((x, i) => {
-        tmpObj[fileId]["regexes"][i] = {}
-        tmpObj[fileId]["regexes"][i]["description"] = x.querySelector("Description").textContent;
-        tmpObj[fileId]["regexes"][i]["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
-        tmpObj[fileId]["regexes"][i]["source"] = x.querySelector("RegExSource").textContent;
-        tmpObj[fileId]["regexes"][i]["target"] = x.querySelector("RegExTarget").textContent;
-        tmpObj[fileId]["regexes"][i]["condition"] = x.querySelector("RuleCondition").textContent;
-
-
-        const tmpArrObj = {};
-        tmpArrObj["file"] = fileRead.fileName;;
-        tmpArrObj["description"] = x.querySelector("Description").textContent;
-        tmpArrObj["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
-        tmpArrObj["source"] = x.querySelector("RegExSource").textContent;
-        tmpArrObj["target"] = x.querySelector("RegExTarget").textContent;
-        tmpArrObj["condition"] = x.querySelector("RuleCondition").textContent;
-        arryData.push(tmpArrObj);
-      });
-
-    }
-    setRegexList(tmpObj)
-    setMyData(arryData)
-  }
-  const handleChanges = (e) => {
-    const data = e.target.dataset;
-    const tmpObj = { ...regexList }
-    tmpObj[data.fileId]["regexes"][data.regexId][data.field] = e.target.value;
-    setRegexList(tmpObj)
   }
 
   const removeRegex = (e) => {
@@ -227,23 +127,6 @@ function App() {
   }
 
   const createNew = () => {
-    /* const tmpObj = { ...regexList }
-    if (tmpObj["newRegexes"] == undefined) {
-      tmpObj["newRegexes"] = {
-        "name": "newRegexes",
-        regexes: {}
-      }
-    }
-
-    const newRegexId = Object.keys(tmpObj["newRegexes"]["regexes"]).length
-    tmpObj["newRegexes"]["regexes"][newRegexId] = {
-      "description": "",
-      ignoreCase: "true",
-      source: "",
-      target: "",
-      condition: "TargetAndSource"
-    }
-    setRegexList(tmpObj) */
     const newObj = {
       file: "new regex",
       description: "",
@@ -278,14 +161,7 @@ function App() {
     saveAs(fileToDownload)
   }
 
-  const handleItemChange = useCallback((index, index2, newData) => {
-    setRegexList(prevItems => {
-      const newItems = { ...prevItems };
-      newItems[index]["regexes"][index2]["description"] = newData.description
-      return newItems;
-    });
 
-  }, []);
   return (
     <>
       <title>Regex Combiner</title>
@@ -293,11 +169,11 @@ function App() {
         <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
         <button className="btn btn-primary" onClick={importRegex}>Import</button>
         <p>
-          {Object.keys(regexList)
+          {regexList
             ?
-            Object.keys(regexList).map(x => Object.keys(regexList[x]["regexes"]).length).reduce(((a, b) => a + b), 0)
+            regexList.length
             :
-            null
+            0
           }
         </p>
         <button className="btn btn-success rounded-2xl" onClick={createNew}>+</button>
@@ -332,23 +208,7 @@ function App() {
               </tr>
             ))}
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {table.getRowModel().rows.map(row => {
-              console.log("myrow", row)
-              return (
-                <tr key={row.id} className="hover:bg-gray-50">
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
-          </tbody>
+          <TableBody rows={table.getRowModel().rows} />
         </table>
       </div>
 
