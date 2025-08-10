@@ -1,26 +1,27 @@
-import { memo, useCallback} from "react";
+import { memo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateRegex } from "../features/regexesSlice";
 
-const EditableSelect = memo(({ value, rowIndex, columnId, updateData, options }) => {
+const EditableSelect = memo(({ regexId, field, options }) => {
+  const regex = useSelector((state) => state.regexes.value[regexId])
+  const dispatch = useDispatch()
     
-
-    const onBlur = useCallback(() => {
-        updateData(rowIndex, columnId, value);
-    }, [updateData, rowIndex, columnId, value]);
-
-   
-
+    const onChange = (e) => {
+      dispatch(updateRegex({id: regexId, field, data: e.target.value}))
+    }
+    
     return (
-        <select
-            defaultValue={value}
-            
-            onBlur={onBlur}
-            className="select select-accent"
-        >
-            {options.map(option => (
-                <option key={option} value={option}>{option}</option>
-            ))}
-        </select>
+      <select
+        value={regex[field]}
+        onChange={onChange}
+        
+        className="select select-accent"
+      >
+        {options.map(option => (
+          <option key={option} value={option}>{option}</option>
+        ))}
+      </select>
     );
-});
+  });
 
 export default EditableSelect

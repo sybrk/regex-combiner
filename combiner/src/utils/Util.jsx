@@ -26,6 +26,15 @@ export const idGenerator = () => {
     });
 }
 
+export const generateIdFiveChar = () =>{
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 5; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
 export const newRegexFile = () => {
   const xmlString = `<?xml version="1.0" encoding="utf-8"?><SettingsBundle><SettingsGroup Id="QAVerificationSettings"><Setting Id="RegExRules">True</Setting></SettingsGroup></SettingsBundle>`;
   const newFile = xmlParser(xmlString);
@@ -78,4 +87,28 @@ export const regexParser = async (filesArr) => {
     });
   }
   return regexObjArr
+}
+
+export const regexParserObj = async (filesArr) => {
+  const regexObj = {}
+  for (let index = 0; index < filesArr.length; index++) {
+    const file = filesArr[index];
+    const fileRead = await readFile(file);
+    const parseFile = xmlParser(fileRead.fileContent)
+    let regexRules = Array.from(parseFile.querySelectorAll("RegExRule"));
+    //console.log("regexrules", regexRules)
+    regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement.getAttribute('Id')))
+    regexRules.map((x, i) => {
+      
+      const regexId = generateIdFiveChar()
+      regexObj[regexId] = {};
+      regexObj[regexId]["file"] = fileRead.fileName;;
+      regexObj[regexId]["description"] = x.querySelector("Description").textContent;
+      regexObj[regexId]["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
+      regexObj[regexId]["source"] = x.querySelector("RegExSource").textContent;
+      regexObj[regexId]["target"] = x.querySelector("RegExTarget").textContent;
+      regexObj[regexId]["condition"] = x.querySelector("RuleCondition").textContent;
+    });
+  }
+  return regexObj
 }

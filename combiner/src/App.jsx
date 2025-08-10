@@ -1,125 +1,37 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import './App.css'
-import { newRegexFile, regexNodeBuilder, regexParser } from './utils/Util'
+import { idGenerator, newRegexFile, readFile, regexNodeBuilder, regexParserObj, xmlParser } from './utils/Util'
 import { saveAs } from 'file-saver'
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
+import { useDispatch, useSelector } from 'react-redux'
+import { getRegexIds, importRegexes, updateRegex } from './features/regexesSlice'
 import EditableTextarea from './components/EditableTextarea'
 import EditableSelect from './components/EditableSelect'
-import TableBody from './components/TableBody'
+
 
 
 
 function App() {
 
 
-  const [regexList, setRegexList] = useState([])
-  
-
-  const updateData = useCallback((rowIndex, columnId, value) => {
-    
-    setRegexList(old =>
-      old.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...old[rowIndex],
-            [columnId]: value,
-          };
-        }
-        return row;
-      })
-    );
-  }, []);
-
-  
-
-  const columnHelper = createColumnHelper();
-  // Create cell renderers as useCallback hooks
-  const createTextareaCell = useCallback((columnId) => (info) => (
-    <EditableTextarea
-      key={`${info.row.index}-${columnId}`} // Add key for better React reconciliation
-      value={info.getValue()}
-      rowIndex={info.row.index}
-      columnId={columnId}
-      updateData={updateData}
-    />
-  ), [updateData]);
-
-  const createSelectCell = useCallback((columnId, options) => (info) => (
-    <EditableSelect
-      key={`${info.row.index}-${columnId}`}
-      value={info.getValue()}
-      rowIndex={info.row.index}
-      columnId={columnId}
-      updateData={updateData}
-      options={options}
-    />
-  ), [updateData]);
-
-  const columns = useMemo(() => [
-    columnHelper.accessor('file', {
-      header: 'File',
-      cell: info => info.getValue(),
-    }),
-    columnHelper.accessor('description', {
-      header: 'Description',
-      cell: createTextareaCell('description'),
-    }),
-    columnHelper.accessor('ignoreCase', {
-      header: 'Ignore Case',
-      cell: createSelectCell('ignoreCase', ['true', 'false']),
-    }),
-    columnHelper.accessor('source', {
-      header: 'Source',
-      cell: createTextareaCell('source'),
-    }),
-    columnHelper.accessor('target', {
-      header: 'Target',
-      cell: createTextareaCell('target'),
-    }),
-    columnHelper.accessor('condition', {
-      header: 'Condition',
-      cell: createSelectCell('condition', [
-        'TargetAndSource',
-        'TargetNotSource',
-        'SourceNotTarget',
-        'SourceOnly',
-        'TargetOnly',
-        'DifferentCount',
-        'GroupedSourceNotTarget',
-        'GroupedTargetAndSource'
-      ]),
-    }),
-  ], [createTextareaCell, createSelectCell]);
-
-  const table = useReactTable({
-    data: regexList,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    meta: {
-      updateData,
-    },
-    debugTable: true
-  })
-
-
-
+  //const [regexList, setRegexList] = useState({})
+  const dispatch = useDispatch()
+  const regexes = useSelector(getRegexIds)
+  //console.log("coming", regexes)
   const importRegex = async () => {
-
+   
     const files = document.getElementById("regexfiles").files
-    const regexArr = await regexParser(files)
-    setRegexList(regexArr)
-
+    const result = await regexParserObj(files);
+    dispatch(importRegexes(result))
+  }
+  const handleChanges = (e) => {
+    const data = e.target.dataset;
+    
+    dispatch(updateRegex({id: data.regexId, field: data.field, data: e.target.value}))
   }
 
   const removeRegex = (e) => {
+    console.log("neredeyim", e.target)
     const data = e.target.dataset;
     const tmpObj = { ...regexList }
     delete tmpObj[data.fileId]["regexes"][data.regexId]
@@ -127,15 +39,23 @@ function App() {
   }
 
   const createNew = () => {
-    const newObj = {
-      file: "new regex",
-      description: "",
-      ignoreCase: "false",
+    const tmpObj = { ...regexList }
+    if (tmpObj["newRegexes"] == undefined) {
+      tmpObj["newRegexes"] = {
+        "name": "newRegexes",
+        regexes: {}
+      }
+    }
+
+    const newRegexId = Object.keys(tmpObj["newRegexes"]["regexes"]).length
+    tmpObj["newRegexes"]["regexes"][newRegexId] = {
+      "description": "",
+      ignoreCase: "true",
       source: "",
       target: "",
       condition: "TargetAndSource"
     }
-    setMyData(old => [...old, newObj])
+    setRegexList(tmpObj)
   }
   const combine = () => {
     const newFile = newRegexFile();
@@ -169,48 +89,69 @@ function App() {
         <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
         <button className="btn btn-primary" onClick={importRegex}>Import</button>
         <p>
-          {regexList
-            ?
-            regexList.length
-            :
-            0
-          }
+
+
+          {regexes.length}
         </p>
         <button className="btn btn-success rounded-2xl" onClick={createNew}>+</button>
         <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
       </div>
 
       <div className="">
-        <table className='table'>
+        <table className="table">
           <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <div className="flex items-center gap-2">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      <span className="text-gray-400">
-                        {{
-                          asc: '↑',
-                          desc: '↓',
-                        }[header.column.getIsSorted()] ?? '↕'}
-                      </span>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
+            <tr>
+              <th>File</th>
+              <th>Description</th>
+              <th>IgnoreCase</th>
+              <th>Source</th>
+              <th>Target</th>
+              <th>Condition</th>
+              <th></th>
+            </tr>
           </thead>
-          <TableBody rows={table.getRowModel().rows} />
+          <tbody>
+            {regexes
+              ? regexes.map((regex, i) => {
+                //console.log("this is rendered again", regex)
+                return (
+                  <tr className="hover:bg-base-300" key={regex} data-regex-id={regex}>
+                    <td>{/* {regexes[regex].file} */}</td>
+                    <td>
+                      <EditableTextarea regexId={regex} field={"description"} />
+
+                    </td>
+                    <td>
+                      <EditableSelect regexId= {regex} field = {"ignoreCase"} options = {["true", "false"]} />
+                    </td>
+                    <td className='wrap-anywhere'>
+                    <EditableTextarea regexId={regex} field={"source"} />
+                    </td>
+                    <td className='wrap-anywhere'>
+                    <EditableTextarea regexId={regex} field={"target"} />
+                    </td>
+                    <td className=''>
+                    <EditableSelect regexId= {regex} field = {"condition"} options = {["TargetAndSource", "TargetNotSource", "SourceNotTarget", "SourceOnly", "TargetOnly", "DifferentCount", "GroupedSourceNotTarget", "GroupedTargetAndSource"]} />
+                      
+
+                    </td>
+                    <td>
+                      <button
+                        data-regex-id={regex}
+                        onClick={removeRegex} className="btn btn-sm rounded-2xl btn-error"
+                      >
+                        x
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+
+
+              : null}
+          </tbody>
         </table>
-      </div>
+      </div >
 
 
     </>

@@ -1,20 +1,27 @@
-import { memo, useCallback } from "react";
+import { memo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectRegexById, updateRegex } from "../features/regexesSlice";
 
-const EditableTextarea = memo(({ value, rowIndex, columnId, updateData }) => {
-   
+const EditableTextarea = memo(({ regexId, field }) => {
 
-    const onBlur = useCallback(() => {
-        updateData(rowIndex, columnId, value);
-    }, [updateData, rowIndex, columnId, value]);
-
+  console.log(regexId,  "component rendering")
     
-
+  const regex = useSelector((state) => selectRegexById(state, regexId))
+  const dispatch = useDispatch()
+    
+    const onChange = (e) => {
+      dispatch(updateRegex({id: regexId, field, data: e.target.value}))
+    }
+    
+   
+    
     return (
-        <textarea
-            className='textarea'
-            defaultValue={value}
-            onBlur={onBlur}
-        />
+      <textarea
+        className='textarea'
+        value={regex[field]}
+        onChange={onChange}
+        
+      />
     );
-});
+  });
 export default EditableTextarea
