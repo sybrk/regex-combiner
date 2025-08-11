@@ -1,9 +1,13 @@
 import { createSelector, createSlice } from '@reduxjs/toolkit'
+import { generateIdFiveChar } from '../utils/Util'
 
 export const regexesSlice = createSlice({
   name: 'regexes',
   initialState: {
-    value: {}
+    "ids": [],
+    value: {
+      
+    }
   },
   reducers: {
     
@@ -14,15 +18,30 @@ export const regexesSlice = createSlice({
     importRegexes: (state, action) => {
       console.log(action.payload)
         state.value =  action.payload
+        state.ids = Object.keys(action.payload)
+    },
+    newRegex: (state) => {
+      const newId = generateIdFiveChar()
+      state.value[newId] = {
+        "file": "New Regex",
+        "description": "",
+        "ignoreCase": "true",
+        "source": "",
+        "target": "",
+        "condition": "TargetAndSource"
+      }
+      state.ids = [newId, ...state.ids]
+    },
+    removeRegex: (state, action) => {
+      delete state.value[action.payload.regexId]
+      state.ids = state.ids.filter(x => x != action.payload.regexId)
     }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { updateRegex, importRegexes } = regexesSlice.actions
-export const getRegexIds = createSelector(
-  [state => state.regexes?.value || {}],
-  (regexesValue) => Object.keys(regexesValue)
-)
-export const selectRegexById = (state, regexId) => state.regexes?.value[regexId]
+export const { updateRegex, importRegexes, newRegex, removeRegex } = regexesSlice.actions
+
+export const selectRegexByIdAndField = (state, regexId, field) => state.regexes?.value[regexId][field]
+export const selectIds = (state) => state.regexes?.ids
 export default regexesSlice.reducer

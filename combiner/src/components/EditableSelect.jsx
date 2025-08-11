@@ -1,9 +1,9 @@
 import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateRegex } from "../features/regexesSlice";
+import { selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
 
 const EditableSelect = memo(({ regexId, field, options }) => {
-  const regex = useSelector((state) => state.regexes.value[regexId])
+  const regexField = useSelector((state) => selectRegexByIdAndField(state, regexId, field))
   const dispatch = useDispatch()
     
     const onChange = (e) => {
@@ -12,7 +12,7 @@ const EditableSelect = memo(({ regexId, field, options }) => {
     
     return (
       <select
-        value={regex[field]}
+        value={regexField}
         onChange={onChange}
         
         className="select select-accent"
