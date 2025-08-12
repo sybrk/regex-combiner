@@ -7,7 +7,9 @@ export const regexesSlice = createSlice({
     "ids": [],
     value: {
       
-    }
+    },
+    duplicates : null,
+    emptyDescription: null
   },
   reducers: {
     
@@ -35,12 +37,26 @@ export const regexesSlice = createSlice({
     removeRegex: (state, action) => {
       delete state.value[action.payload.regexId]
       state.ids = state.ids.filter(x => x != action.payload.regexId)
+    },
+    getDuplicates: (state) => {
+      const allDescriptions = Object.keys(state.value).map(x => 
+        state.value[x]["description"]
+      )
+      console.log("all desc", allDescriptions)
+      state.duplicates = allDescriptions.filter((x, i) => allDescriptions.indexOf(x) !== i)
+    },
+    checkEmptyDescriptions: (state) => {
+      const allDescriptions = Object.keys(state.value).map(x => 
+        state.value[x]["description"]
+      )
+      
+      state.emptyDescription = allDescriptions.some((x, i) => !x.length)
     }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { updateRegex, importRegexes, newRegex, removeRegex } = regexesSlice.actions
+export const { updateRegex, importRegexes, newRegex, removeRegex, getDuplicates, checkEmptyDescriptions } = regexesSlice.actions
 
 export const selectRegexByIdAndField = (state, regexId, field) => state.regexes?.value[regexId][field]
 export const selectIds = (state) => state.regexes?.ids

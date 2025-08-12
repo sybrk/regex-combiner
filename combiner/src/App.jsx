@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import './App.css'
 import { idGenerator, newRegexFile, readFile, regexNodeBuilder, regexParserObj, xmlParser } from './utils/Util'
 import { saveAs } from 'file-saver'
 import { useDispatch, useSelector } from 'react-redux'
-import { importRegexes, newRegex, removeRegex, selectIds, updateRegex } from './features/regexesSlice'
+import { checkEmptyDescriptions, getDuplicates, importRegexes, newRegex, removeRegex, selectIds, updateRegex } from './features/regexesSlice'
 import EditableTextarea from './components/EditableTextarea'
 import EditableSelect from './components/EditableSelect'
 import RegexFile from './components/RegexFile'
@@ -19,6 +19,9 @@ function App() {
   const dispatch = useDispatch()
   const regexes = useSelector((state) => selectIds(state))
   const regexObjects = useSelector(state => state.regexes.value)
+  const duplicateRegexes = useSelector(state => state.regexes.duplicates)
+  const emptyDescriptipn = useSelector(state => state.regexes.emptyDescription)
+  const [shouldCombine, setShouldCombine] = useState(false);
   console.log("coming", regexes)
   const importRegex = async () => {
 
@@ -36,28 +39,50 @@ function App() {
   const createNew = () => {
     dispatch(newRegex())
   }
-  const combine = () => {
+
+  useEffect(() => {
+    if (!shouldCombine) return;
+    
+    
+    if (duplicateRegexes?.length) {
+      setShouldCombine(false); // Reset flag
+      return;
+    }
+    if (emptyDescriptipn) {
+      setShouldCombine(false); // Reset flag
+      return;
+    }
+    
+    // Your file creation logic here
     const newFile = newRegexFile();
     const parent = newFile.querySelector("SettingsGroup");
-    const regexCount = regexes.length
+    const regexCount = regexes.length;
     const regexCountNode = document.createElementNS("", "Setting");
     regexCountNode.setAttribute("Id", "RegExRulesCount");
     regexCountNode.textContent = regexCount;
-    parent.appendChild(regexCountNode)
+    parent.appendChild(regexCountNode);
+    
     let regexId = 0;
-
     Object.keys(regexObjects).map((regex) => {
       const settingNode = regexNodeBuilder(regexObjects[regex], regexId);
-      parent.appendChild(settingNode)
-      regexId++
-    })
-
-    const serialer = new XMLSerializer();
-    const serializedFile = serialer.serializeToString(newFile);
+      parent.appendChild(settingNode);
+      regexId++;
+    });
+  
+    const serializer = new XMLSerializer();
+    const serializedFile = serializer.serializeToString(newFile);
     const fileToDownload = new File([serializedFile], "combined.sdlqasettings", {
       type: "text/xml",
     });
-    saveAs(fileToDownload)
+    saveAs(fileToDownload);
+    
+    setShouldCombine(false); // Reset flag
+  }, [duplicateRegexes, shouldCombine, regexes, regexObjects]);
+
+  const combine = () => {
+    dispatch(getDuplicates())
+    dispatch(checkEmptyDescriptions())
+    setShouldCombine(true);
   }
 
 
@@ -97,7 +122,7 @@ function App() {
                   <tr className="hover:bg-base-300" key={regex} data-regex-id={regex}>
                     <td><RegexFile regexId={regex} /></td>
                     <td>
-                      <EditableTextarea regexId={regex} field={"description"} />
+                      <EditableTextarea regexId={regex} field={"description"} duplicates = {duplicateRegexes} checkEmpty = {true} />
 
                     </td>
                     <td>

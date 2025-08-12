@@ -2,12 +2,13 @@ import { memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {  selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
 
-const EditableTextarea = memo(({ regexId, field }) => {
+const EditableTextarea = memo(({ regexId, field, duplicates, checkEmpty }) => {
 
   console.log(regexId,  "component rendering")
     
   const regexField = useSelector((state) => selectRegexByIdAndField(state, regexId, field))
   const dispatch = useDispatch()
+  
     
     const onChange = (e) => {
       dispatch(updateRegex({id: regexId, field, data: e.target.value}))
@@ -17,7 +18,7 @@ const EditableTextarea = memo(({ regexId, field }) => {
     
     return (
       <textarea
-        className='textarea'
+        className={"textarea " + (((duplicates && duplicates.includes(regexField)) || (checkEmpty && !regexField.length)) && "textarea-error text-error")}
         value={regexField}
         onChange={onChange}
         
