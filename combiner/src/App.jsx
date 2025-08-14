@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import './App.css'
-import { idGenerator, newRegexFile, readFile, regexNodeBuilder, regexParserObj, xmlParser } from './utils/Util'
-import { saveAs } from 'file-saver'
+import {  regexParserObj, } from './utils/Util'
+
 import { useDispatch, useSelector } from 'react-redux'
-import { checkEmptyDescriptions, getDuplicates, importRegexes, newRegex, removeRegex, selectIds, updateRegex } from './features/regexesSlice'
+import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds } from './features/regexesSlice'
 import EditableTextarea from './components/EditableTextarea'
 import EditableSelect from './components/EditableSelect'
 import RegexFile from './components/RegexFile'
+import Description from './components/Description'
+import SourceRegex from './components/SourceRegex'
+import TargetRegex from './components/TargetRegex'
 
 
 
@@ -15,25 +18,18 @@ import RegexFile from './components/RegexFile'
 function App() {
 
 
-  //const [regexList, setRegexList] = useState({})
   const dispatch = useDispatch()
   const regexes = useSelector((state) => selectIds(state))
-  const regexObjects = useSelector(state => state.regexes.value)
-  const duplicateRegexes = useSelector(state => state.regexes.duplicates)
-  const emptyDescriptipn = useSelector(state => state.regexes.emptyDescription)
+ 
   const [shouldCombine, setShouldCombine] = useState(false);
-  console.log("coming", regexes)
+  
   const importRegex = async () => {
 
     const files = document.getElementById("regexfiles").files
     const result = await regexParserObj(files);
     dispatch(importRegexes(result))
   }
-  const handleChanges = (e) => {
-    const data = e.target.dataset;
-
-    dispatch(updateRegex({ id: data.regexId, field: data.field, data: e.target.value }))
-  }
+ 
 
 
   const createNew = () => {
@@ -42,46 +38,11 @@ function App() {
 
   useEffect(() => {
     if (!shouldCombine) return;
-    
-    
-    if (duplicateRegexes?.length) {
-      setShouldCombine(false); // Reset flag
-      return;
-    }
-    if (emptyDescriptipn) {
-      setShouldCombine(false); // Reset flag
-      return;
-    }
-    
-    // Your file creation logic here
-    const newFile = newRegexFile();
-    const parent = newFile.querySelector("SettingsGroup");
-    const regexCount = regexes.length;
-    const regexCountNode = document.createElementNS("", "Setting");
-    regexCountNode.setAttribute("Id", "RegExRulesCount");
-    regexCountNode.textContent = regexCount;
-    parent.appendChild(regexCountNode);
-    
-    let regexId = 0;
-    Object.keys(regexObjects).map((regex) => {
-      const settingNode = regexNodeBuilder(regexObjects[regex], regexId);
-      parent.appendChild(settingNode);
-      regexId++;
-    });
-  
-    const serializer = new XMLSerializer();
-    const serializedFile = serializer.serializeToString(newFile);
-    const fileToDownload = new File([serializedFile], "combined.sdlqasettings", {
-      type: "text/xml",
-    });
-    saveAs(fileToDownload);
-    
     setShouldCombine(false); // Reset flag
-  }, [duplicateRegexes, shouldCombine, regexes, regexObjects]);
+  }, [shouldCombine]);
 
   const combine = () => {
-    dispatch(getDuplicates())
-    dispatch(checkEmptyDescriptions())
+    dispatch(combineRegexes())
     setShouldCombine(true);
   }
 
@@ -122,17 +83,17 @@ function App() {
                   <tr className="hover:bg-base-300" key={regex} data-regex-id={regex}>
                     <td><RegexFile regexId={regex} /></td>
                     <td>
-                      <EditableTextarea regexId={regex} field={"description"} duplicates = {duplicateRegexes} checkEmpty = {true} />
+                      <Description regexId={regex} />
 
                     </td>
                     <td>
                       <EditableSelect regexId={regex} field={"ignoreCase"} options={["true", "false"]} />
                     </td>
                     <td className='wrap-anywhere'>
-                      <EditableTextarea regexId={regex} field={"source"} />
+                      <SourceRegex regexId={regex} />
                     </td>
                     <td className='wrap-anywhere'>
-                      <EditableTextarea regexId={regex} field={"target"} />
+                      <TargetRegex regexId={regex}/>
                     </td>
                     <td className=''>
                       <EditableSelect regexId={regex} field={"condition"} options={["TargetAndSource", "TargetNotSource", "SourceNotTarget", "SourceOnly", "TargetOnly", "DifferentCount", "GroupedSourceNotTarget", "GroupedTargetAndSource"]} />
