@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
 
-const SourceRegex = memo(({ regexId }) => {
+const SourceRegex = memo(({ regexId, iframeRef }) => {
 
   console.log(regexId, "component rendering")
 
@@ -11,32 +11,28 @@ const SourceRegex = memo(({ regexId }) => {
   const dispatch = useDispatch()
   const [hasError, setHaserror] = useState(false)
 
-  useEffect(() => {
+  
+    
+  const runRegex = (pattern) => {
+    window.addEventListener("message", function handler(event) {
+      if (event.data?.type === "regex-result") {
+        console.log("regex result", event.data.result)
+        setHaserror(!(event.data.result));
+        window.removeEventListener("message", handler);
+      }
+    });
 
-    const checkRegex = async () => {
-      const result = await window.DotNet.invokeMethodAsync(
-        "RegexValidator", // Assembly name from Blazor .csproj
-        "ValidateRegex",
-        source
-      );
-      setHaserror(result);
-    }
-    
-    if (!window.blazorStarted) {
-      // Start Blazor and then call checkRegex
-      window.blazorStarted = window.Blazor.start().then(() => {
-        checkRegex();
-      });
-    } else {
-      checkRegex();
-    }
-    
-    
+    iframeRef.current.contentWindow.postMessage(
+      { type: "regex", pattern },
+      "*"
+    );
+  };
    
-  },[source])
+  
 
     const onChange = (e) => {
       dispatch(updateRegex({ id: regexId, field: "source", data: e.target.value }))
+      runRegex(e.target.value)
       /* const testString = "Hello World"
 
       try {

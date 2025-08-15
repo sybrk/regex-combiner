@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import './App.css'
 import {  regexParserObj, } from './utils/Util'
@@ -18,8 +18,8 @@ import TargetRegex from './components/TargetRegex'
 function App() {
 
 
-
-
+  
+  const iframeRef = useRef(null);
   const dispatch = useDispatch()
   const regexes = useSelector((state) => selectIds(state))
  
@@ -51,6 +51,11 @@ function App() {
 
   return (
     <>
+    <iframe
+        ref={iframeRef}
+        src="/wwwroot/index.html" // your Blazor WASM build
+        style={{ display: "none" }}
+      />
       <title>Regex Combiner</title>
       <div className='mt-5 flex flex-row justify-center gap-4 items-center'>
         <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
@@ -92,7 +97,7 @@ function App() {
                       <EditableSelect regexId={regex} field={"ignoreCase"} options={["true", "false"]} />
                     </td>
                     <td className='wrap-anywhere'>
-                      <SourceRegex regexId={regex} />
+                      <SourceRegex regexId={regex} iframeRef = {iframeRef} />
                     </td>
                     <td className='wrap-anywhere'>
                       <TargetRegex regexId={regex}/>
