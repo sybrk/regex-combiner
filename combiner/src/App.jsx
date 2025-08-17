@@ -5,7 +5,6 @@ import {  regexParserObj, } from './utils/Util'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds } from './features/regexesSlice'
-import EditableTextarea from './components/EditableTextarea'
 import EditableSelect from './components/EditableSelect'
 import RegexFile from './components/RegexFile'
 import Description from './components/Description'
@@ -38,6 +37,7 @@ function App() {
     dispatch(newRegex())
   }
 
+  
   useEffect(() => {
     if (!shouldCombine) return;
     setShouldCombine(false); // Reset flag
@@ -52,6 +52,7 @@ function App() {
   return (
     <>
     <iframe
+        id='blazor_regex'
         ref={iframeRef}
         src="/wwwroot/index.html" // your Blazor WASM build
         style={{ display: "none" }}
@@ -100,7 +101,7 @@ function App() {
                       <SourceRegex regexId={regex} iframeRef = {iframeRef} />
                     </td>
                     <td className='wrap-anywhere'>
-                      <TargetRegex regexId={regex}/>
+                      <TargetRegex regexId={regex} iframeRef = {iframeRef}/>
                     </td>
                     <td className=''>
                       <EditableSelect regexId={regex} field={"condition"} options={["TargetAndSource", "TargetNotSource", "SourceNotTarget", "SourceOnly", "TargetOnly", "DifferentCount", "GroupedSourceNotTarget", "GroupedTargetAndSource"]} />

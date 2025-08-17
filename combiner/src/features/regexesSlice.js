@@ -30,7 +30,9 @@ export const regexesSlice = createSlice({
         "description": "",
         "ignoreCase": "true",
         "source": "",
+        "sourceValid": null,
         "target": "",
+        "targetValid": null,
         "condition": "TargetAndSource"
       }
       state.ids = [newId, ...state.ids]
@@ -52,18 +54,7 @@ export const regexesSlice = createSlice({
         state.value[x]["source"]), ...Object.keys(state.value).map(x =>
           state.value[x]["target"])]
       state.invalidRegexes = false
-      for (let index = 0; index < allRegexPatterns.length; index++) {
-        const element = allRegexPatterns[index];
-        const testString = "Hello World"
-
-        try {
-          const regexString = new RegExp(element, "g")
-          regexString.test(testString)
-        } catch (error) {
-          state.invalidRegexes = true
-          break
-        }
-      }
+      
 
       // check emptyDescriptions
       if (allDescriptions.some((x) => !x.length)) return

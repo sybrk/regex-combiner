@@ -9,21 +9,30 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
   const source = useSelector((state) => selectRegexByIdAndField(state, regexId, "source"))
   const condition = useSelector((state) => selectRegexByIdAndField(state, regexId, "condition"))
   const dispatch = useDispatch()
-  const [hasError, setHaserror] = useState(false)
-
   
+  const sourceValid = useSelector((state) => selectRegexByIdAndField(state, regexId, "sourceValid"))
+  
+
+  /* useEffect(() => {
+    runRegex(source)
+  },[]) */
+  useEffect(() => {
+    function handler(event) {
+      console.log(event.data)
+      if (event.data?.type === "regex-result" && event.data.regexId === regexId  && event.data.section === "source") {
+        dispatch(updateRegex({ id: regexId, field: "sourceValid", data: event.data.result }))
+      }
+    }
+  
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler); // cleanup
+  }, []);
     
   const runRegex = (pattern) => {
-    window.addEventListener("message", function handler(event) {
-      if (event.data?.type === "regex-result") {
-        console.log("regex result", event.data.result)
-        setHaserror(!(event.data.result));
-        window.removeEventListener("message", handler);
-      }
-    });
+    
 
     iframeRef.current.contentWindow.postMessage(
-      { type: "regex", pattern },
+      { type: "regex", pattern, regexId, section: "source" },
       "*"
     );
   };
@@ -33,16 +42,7 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
     const onChange = (e) => {
       dispatch(updateRegex({ id: regexId, field: "source", data: e.target.value }))
       runRegex(e.target.value)
-      /* const testString = "Hello World"
-
-      try {
-        const regexString = new RegExp(e.target.value, "g")
-        regexString.test(testString)
-        setHaserror(false)
-      } catch (error) {
-        console.error("regex err", error)
-        setHaserror(true)
-      } */
+  
     }
 
 
@@ -51,7 +51,7 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
 
     return (
       <textarea
-        className={"textarea " + (hasError && "textarea-error text-error")}
+        className={"textarea " + (sourceValid != null && !sourceValid && "textarea-error text-error")}
         value={source}
         onChange={onChange}
 

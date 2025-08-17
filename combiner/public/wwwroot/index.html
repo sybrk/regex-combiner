@@ -25,7 +25,7 @@
     <script src="./_framework/blazor.webassembly.js"></script>
     <script>window.addEventListener("message", async (event) => {
         if (event.data?.type === "regex") {
-          const { pattern } = event.data;
+          const { pattern, regexId, section } = event.data;
           const result = await DotNet.invokeMethodAsync(
             "RegexWasm",
             "ValidateRegex",
@@ -33,7 +33,7 @@
           );
           // Send result back to parent
           console.log("message received")
-          event.source.postMessage({ type: "regex-result", result }, event.origin);
+          event.source.postMessage({ type: "regex-result", result, regexId, section }, event.origin);
         }
       });</script>
 </body>
