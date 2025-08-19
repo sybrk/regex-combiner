@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import './App.css'
-import {  regexParserObj, } from './utils/Util'
+import { regexParserObj, } from './utils/Util'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds, selectPagedRegexes } from './features/regexesSlice'
+import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds, selectPagedRegexes, selectTotalPages, setPage } from './features/regexesSlice'
 import EditableSelect from './components/EditableSelect'
 import RegexFile from './components/RegexFile'
 import Description from './components/Description'
@@ -17,28 +17,65 @@ import TargetRegex from './components/TargetRegex'
 function App() {
 
 
-  
+
   const iframeRef = useRef(null);
   const dispatch = useDispatch()
   //const regexes = useSelector((state) => selectIds(state))
   const regexes = useSelector(selectPagedRegexes);
+  const totalPages = useSelector(selectTotalPages);
+  const page = useSelector(state => state.regexes.page);
+
   const [shouldCombine, setShouldCombine] = useState(false);
   const regexCount = useSelector(state => Object.keys(state.regexes.value).length)
-  
+
+
+  const batchValidate = (regexesToValidate) => {
+    return new Promise(resolve => {
+      let expected = Object.keys(regexesToValidate).length * 2; // source + target
+      let received = 0;
+      function handler(event) {
+        if (event.data?.type === "regex-result" && event.data.section.includes("combine")) {
+          received++;
+          regexesToValidate[event.data.regexId][event.data.section == "combineSource" ? "sourceValid" : "targetValid"] = event.data.result
+          if (received === expected) {
+            window.removeEventListener("message", handler);
+            resolve();
+          }
+        }
+      }
+
+      window.addEventListener("message", handler);
+
+      // send all regexes
+      Object.keys(regexesToValidate).forEach(x => {
+        iframeRef.current.contentWindow.postMessage(
+          { type: "regex", pattern: regexesToValidate[x]["source"], regexId: x, section: "combineSource" },
+          "*"
+        );
+        iframeRef.current.contentWindow.postMessage(
+          { type: "regex", pattern: regexesToValidate[x]["target"], regexId: x, section: "combineTarget" },
+          "*"
+        );
+      });
+    });
+  };
+
   const importRegex = async () => {
 
     const files = document.getElementById("regexfiles").files
     const result = await regexParserObj(files);
+    await batchValidate(result)
     dispatch(importRegexes(result))
   }
- 
+
 
 
   const createNew = () => {
+    dispatch(setPage(1))
     dispatch(newRegex())
   }
 
-  
+
   useEffect(() => {
     if (!shouldCombine) return;
     setShouldCombine(false); // Reset flag
@@ -52,7 +89,7 @@ function App() {
 
   return (
     <>
-    <iframe
+      <iframe
         id='blazor_regex'
         ref={iframeRef}
         src="/wwwroot/index.html" // your Blazor WASM build
@@ -67,10 +104,21 @@ function App() {
 
           {regexCount}
         </p>
-        <button className="btn btn-success rounded-2xl" onClick={createNew}>+</button>
+        <button className={"btn btn-success rounded-2xl"} onClick={createNew}>+</button>
         <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
       </div>
-
+      <div className='flex justify-center mt-3'>
+      <div className="join">
+        <button className={"join-item btn " + (page === 1 && "btn-disabled")}
+          onClick={() => dispatch(setPage(page - 1))}
+        >«</button>
+        <button className="join-item btn">{page}</button>
+        <button className={"join-item btn " + (page === totalPages && "btn-disabled")}
+          onClick={() => dispatch(setPage(page + 1))}
+        >»</button>
+      </div>
+      </div>
+      
       <div className="">
         <table className="table">
           <thead>
@@ -99,10 +147,10 @@ function App() {
                       <EditableSelect regexId={regex} field={"ignoreCase"} options={["true", "false"]} />
                     </td>
                     <td className='wrap-anywhere'>
-                      <SourceRegex regexId={regex} iframeRef = {iframeRef} />
+                      <SourceRegex regexId={regex} iframeRef={iframeRef} />
                     </td>
                     <td className='wrap-anywhere'>
-                      <TargetRegex regexId={regex} iframeRef = {iframeRef}/>
+                      <TargetRegex regexId={regex} iframeRef={iframeRef} />
                     </td>
                     <td className=''>
                       <EditableSelect regexId={regex} field={"condition"} options={["TargetAndSource", "TargetNotSource", "SourceNotTarget", "SourceOnly", "TargetOnly", "DifferentCount", "GroupedSourceNotTarget", "GroupedTargetAndSource"]} />
