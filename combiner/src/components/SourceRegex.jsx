@@ -18,7 +18,7 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
   },[]) */
   useEffect(() => {
     function handler(event) {
-      console.log(event.data)
+      //console.log(event.data)
       if (event.data?.type === "regex-result" && event.data.regexId === regexId  && event.data.section === "source") {
         dispatch(updateRegex({ id: regexId, field: "sourceValid", data: event.data.result }))
       }

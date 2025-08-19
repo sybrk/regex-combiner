@@ -17,7 +17,7 @@ const TargetRegex = memo(({ regexId, iframeRef }) => {
     
   useEffect(() => {
     function handler(event) {
-      console.log(event.data)
+      //console.log(event.data)
       if (event.data?.type === "regex-result" && event.data.regexId === regexId && event.data.section === "target") {
         dispatch(updateRegex({ id: regexId, field: "targetValid", data: event.data.result }))
       }

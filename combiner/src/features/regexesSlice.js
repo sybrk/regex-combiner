@@ -10,7 +10,8 @@ export const regexesSlice = createSlice({
 
     },
     duplicates: null,
-    invalidRegexes: false
+    page: 1,
+    pageSize: 100
   },
   reducers: {
 
@@ -87,13 +88,30 @@ export const regexesSlice = createSlice({
         type: "text/xml",
       });
       saveAs(fileToDownload);
+    },
+    setPage(state, action) {
+      state.page = action.payload;
     }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { updateRegex, importRegexes, newRegex, removeRegex, combineRegexes } = regexesSlice.actions
+export const { updateRegex, importRegexes, newRegex, removeRegex, combineRegexes, setPage } = regexesSlice.actions
 
 export const selectRegexByIdAndField = (state, regexId, field) => state.regexes?.value[regexId][field]
 export const selectIds = (state) => state.regexes?.ids
+export const selectPagedRegexes = createSelector(
+  state => state.regexes.value,
+  state => state.regexes.page,
+  state => state.regexes.pageSize,
+  (value, page, pageSize) => {
+    const all = Object.keys(value);
+    const start = (page - 1) * pageSize;
+    return all.slice(start, start + pageSize);
+  }
+);
+export const selectTotalPages = (state) => {
+  const { value, pageSize } = state.regexes;
+  return Math.ceil(Object.keys(value).length / pageSize);
+};
 export default regexesSlice.reducer

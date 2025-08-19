@@ -4,7 +4,7 @@ import './App.css'
 import {  regexParserObj, } from './utils/Util'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds } from './features/regexesSlice'
+import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds, selectPagedRegexes } from './features/regexesSlice'
 import EditableSelect from './components/EditableSelect'
 import RegexFile from './components/RegexFile'
 import Description from './components/Description'
@@ -20,9 +20,10 @@ function App() {
   
   const iframeRef = useRef(null);
   const dispatch = useDispatch()
-  const regexes = useSelector((state) => selectIds(state))
- 
+  //const regexes = useSelector((state) => selectIds(state))
+  const regexes = useSelector(selectPagedRegexes);
   const [shouldCombine, setShouldCombine] = useState(false);
+  const regexCount = useSelector(state => Object.keys(state.regexes.value).length)
   
   const importRegex = async () => {
 
@@ -64,7 +65,7 @@ function App() {
         <p>
 
 
-          {regexes?.length}
+          {regexCount}
         </p>
         <button className="btn btn-success rounded-2xl" onClick={createNew}>+</button>
         <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
