@@ -36,7 +36,7 @@ export const regexesSlice = createSlice({
         "targetValid": null,
         "condition": "TargetAndSource"
       }
-      state.ids = [newId, ...state.ids]
+      state.ids = [...state.ids, newId]
     },
     removeRegex: (state, action) => {
       delete state.value[action.payload.regexId]
@@ -44,27 +44,34 @@ export const regexesSlice = createSlice({
     },
     combineRegexes: (state) => {
 
-
+      let combine = true;
       const allDescriptions = Object.keys(state.value).map(x =>
         state.value[x]["description"]
       )
       state.duplicates = allDescriptions.filter((x, i) => allDescriptions.indexOf(x) !== i)
 
       //look for invalid regexes
-      const allRegexPatterns = [...Object.keys(state.value).map(x =>
-        state.value[x]["source"]), ...Object.keys(state.value).map(x =>
-          state.value[x]["target"])]
-      state.invalidRegexes = false
+      const hasInvalidRegex = Object.keys(state.value).some(x => (state.value[x]["sourceValid"] == false || state.value[x]["targetValid"] == false))
       
 
       // check emptyDescriptions
-      if (allDescriptions.some((x) => !x.length)) return
+      if (allDescriptions.some((x) => !x.length)) {
+        combine = false
+      }
 
       //check duplicate descriptions
-      if (state.duplicates?.length) return
+      if (state.duplicates?.length) {
+        combine = false
+      }
 
       //check invalid regexes
-      if (state.invalidRegexes) return
+      if (hasInvalidRegex) {
+        combine = false
+      }
+      if(!combine) {
+        window.alert("there are errors to be fixed")
+        return
+      }
 
       //create combined file
       const newFile = newRegexFile();

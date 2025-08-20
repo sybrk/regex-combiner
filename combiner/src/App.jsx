@@ -71,8 +71,9 @@ function App() {
 
 
   const createNew = () => {
-    dispatch(setPage(1))
+    dispatch(setPage(totalPages))
     dispatch(newRegex())
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
 
@@ -96,6 +97,7 @@ function App() {
         style={{ display: "none" }}
       />
       <title>Regex Combiner</title>
+      
       <div className='mt-5 flex flex-row justify-center gap-4 items-center'>
         <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
         <button className="btn btn-primary" onClick={importRegex}>Import</button>
@@ -107,7 +109,7 @@ function App() {
         <button className={"btn btn-success rounded-2xl"} onClick={createNew}>+</button>
         <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
       </div>
-      <div className='flex justify-center mt-3'>
+      <div className='flex justify-center my-3'>
       <div className="join">
         <button className={"join-item btn " + (page === 1 && "btn-disabled")}
           onClick={() => dispatch(setPage(page - 1))}
@@ -121,7 +123,7 @@ function App() {
       
       <div className="">
         <table className="table">
-          <thead>
+          <thead className='sticky top-0 z-50 bg-accent shadow-md'>
             <tr>
               <th>File</th>
               <th>Description</th>
