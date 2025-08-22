@@ -4,12 +4,14 @@ import './App.css'
 import { regexParserObj, } from './utils/Util'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { combineRegexes, importRegexes, newRegex, removeRegex, selectIds, selectPagedRegexes, selectTotalPages, setPage } from './features/regexesSlice'
+import { combineRegexes, importRegexes, newRegex, removeRegex, selectHasInvalidEntries, selectIds, selectPagedRegexes, selectTotalPages, setPage } from './features/regexesSlice'
 import EditableSelect from './components/EditableSelect'
 import RegexFile from './components/RegexFile'
 import Description from './components/Description'
 import SourceRegex from './components/SourceRegex'
 import TargetRegex from './components/TargetRegex'
+import ScrollToBottom from './components/ScrollToBottom'
+import ScrollToTop from './components/ScrollToTop'
 
 
 
@@ -27,8 +29,8 @@ function App() {
 
   const [shouldCombine, setShouldCombine] = useState(false);
   const regexCount = useSelector(state => Object.keys(state.regexes.value).length)
-
-
+  const hasInvalidEntries = useSelector(selectHasInvalidEntries)
+  console.log("invalidoe", hasInvalidEntries)
   const batchValidate = (regexesToValidate) => {
     return new Promise(resolve => {
       let expected = Object.keys(regexesToValidate).length * 2; // source + target
@@ -37,6 +39,10 @@ function App() {
         if (event.data?.type === "regex-result" && event.data.section.includes("combine")) {
           received++;
           regexesToValidate[event.data.regexId][event.data.section == "combineSource" ? "sourceValid" : "targetValid"] = event.data.result
+          if (!(event.data.result)) {
+            regexesToValidate[event.data.regexId]["hasIssues"] = regexesToValidate[event.data.regexId]["hasIssues"] != true && true
+          }
+
           if (received === expected) {
             window.removeEventListener("message", handler);
             resolve();
@@ -77,14 +83,14 @@ function App() {
   }
 
 
-  useEffect(() => {
+ /*  useEffect(() => {
     if (!shouldCombine) return;
     setShouldCombine(false); // Reset flag
-  }, [shouldCombine]);
+  }, [shouldCombine]); */
 
   const combine = () => {
     dispatch(combineRegexes())
-    setShouldCombine(true);
+    //setShouldCombine(true);
   }
 
 
@@ -97,7 +103,7 @@ function App() {
         style={{ display: "none" }}
       />
       <title>Regex Combiner</title>
-      
+
       <div className='mt-5 flex flex-row justify-center gap-4 items-center'>
         <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
         <button className="btn btn-primary" onClick={importRegex}>Import</button>
@@ -107,24 +113,36 @@ function App() {
           {regexCount}
         </p>
         <button className={"btn btn-success rounded-2xl"} onClick={createNew}>+</button>
-        <button className="btn btn-success rounded-2xl" onClick={combine}>Combine</button>
+        <button className={"btn btn-success rounded-2xl " + (!regexes.length && "btn-disabled")} onClick={combine}>Combine</button>
       </div>
-      <div className='flex justify-center my-3'>
-      <div className="join">
+      <div className='flex flex-col items-center gap-2 my-3'>
+        <div className="join">
         <button className={"join-item btn " + (page === 1 && "btn-disabled")}
-          onClick={() => dispatch(setPage(page - 1))}
-        >«</button>
-        <button className="join-item btn">{page}</button>
-        <button className={"join-item btn " + (page === totalPages && "btn-disabled")}
-          onClick={() => dispatch(setPage(page + 1))}
-        >»</button>
+            onClick={() => dispatch(setPage(1))}
+          >««</button>
+          <button className={"join-item btn " + (page === 1 && "btn-disabled")}
+            onClick={() => dispatch(setPage(page - 1))}
+          >«</button>
+          <button className="join-item btn">{page + " / " + totalPages}</button>
+          <button className={"join-item btn " + ((page === totalPages || totalPages == 0) && "btn-disabled")}
+            onClick={() => dispatch(setPage(page + 1))}
+          >»</button>
+          <button className={"join-item btn " + ((page === totalPages || totalPages == 0)  && "btn-disabled")}
+            onClick={() => dispatch(setPage(totalPages))}
+          >»»</button>
+        </div>
+        <div role="alert" className={"alert alert-error " + (hasInvalidEntries ? "" : "hidden")}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Error! Please fix the errors below before combining.</span>
+        </div>
       </div>
-      </div>
-      
+
       <div className="">
-        <table className="table">
+        <table className="table table-zebra">
           <thead className='sticky top-0 z-50 bg-accent shadow-md'>
-            <tr>
+            <tr className='text-center'>
               <th>File</th>
               <th>Description</th>
               <th>IgnoreCase</th>
@@ -139,7 +157,7 @@ function App() {
               ? regexes.map((regex, i) => {
                 //console.log("this is rendered again", regex)
                 return (
-                  <tr className="hover:bg-base-300" key={regex} data-regex-id={regex}>
+                  <tr className="" key={regex} data-regex-id={regex}>
                     <td><RegexFile regexId={regex} /></td>
                     <td>
                       <Description regexId={regex} />
@@ -175,6 +193,8 @@ function App() {
               : null}
           </tbody>
         </table>
+        <ScrollToBottom />
+        <ScrollToTop />
       </div >
 
 

@@ -91,6 +91,7 @@ export const regexParser = async (filesArr) => {
 
 export const regexParserObj = async (filesArr) => {
   const regexObj = {}
+  let id = 0;
   for (let index = 0; index < filesArr.length; index++) {
     const file = filesArr[index];
     const fileRead = await readFile(file);
@@ -100,7 +101,7 @@ export const regexParserObj = async (filesArr) => {
     regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement.getAttribute('Id')))
     regexRules.map((x, i) => {
       
-      const regexId = generateIdFiveChar()
+      const regexId = id
       regexObj[regexId] = {};
       regexObj[regexId]["file"] = fileRead.fileName;;
       regexObj[regexId]["description"] = x.querySelector("Description").textContent;
@@ -110,6 +111,7 @@ export const regexParserObj = async (filesArr) => {
       regexObj[regexId]["target"] = x.querySelector("RegExTarget").textContent;
       regexObj[regexId]["targetValid"] = null;
       regexObj[regexId]["condition"] = x.querySelector("RuleCondition").textContent;
+      id++
     });
   }
   return regexObj

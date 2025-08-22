@@ -10,6 +10,7 @@ export const regexesSlice = createSlice({
 
     },
     duplicates: null,
+    invalidIds : [],
     page: 1,
     pageSize: 100
   },
@@ -22,10 +23,10 @@ export const regexesSlice = createSlice({
     importRegexes: (state, action) => {
       console.log(action.payload)
       state.value = action.payload
-      state.ids = Object.keys(action.payload)
+      state.ids = Object.keys(action.payload).sort((a,b) => a-b)
     },
     newRegex: (state) => {
-      const newId = generateIdFiveChar()
+      const newId = Math.max(Object.keys(state.value)) + 1;
       state.value[newId] = {
         "file": "New Regex",
         "description": "",
@@ -44,15 +45,32 @@ export const regexesSlice = createSlice({
     },
     combineRegexes: (state) => {
 
+      if(!state.ids.length) return
+
       let combine = true;
+      
       const allDescriptions = Object.keys(state.value).map(x =>
         state.value[x]["description"]
       )
       state.duplicates = allDescriptions.filter((x, i) => allDescriptions.indexOf(x) !== i)
-
-      //look for invalid regexes
-      const hasInvalidRegex = Object.keys(state.value).some(x => (state.value[x]["sourceValid"] == false || state.value[x]["targetValid"] == false))
       
+      //reset and start invalidIds
+      state.invalidIds = Object.keys(state.value).filter((x,i) => {
+        if(state.duplicates.includes(state.value[x]["description"]) || !state.value[x]["description"].length) {
+          return x
+        }
+        
+      })
+      //look for invalid regexes
+      const invalidRegexes = Object.keys(state.value).filter(x => (state.value[x]["sourceValid"] == false || state.value[x]["targetValid"] == false))
+      invalidRegexes.forEach(x =>
+        {
+          if(!state.invalidIds.includes(x)){
+            state.invalidIds = [...state.invalidIds, x]
+          }
+        }
+        
+      )
 
       // check emptyDescriptions
       if (allDescriptions.some((x) => !x.length)) {
@@ -65,14 +83,20 @@ export const regexesSlice = createSlice({
       }
 
       //check invalid regexes
-      if (hasInvalidRegex) {
+      if (invalidRegexes.length) {
         combine = false
       }
       if(!combine) {
-        window.alert("there are errors to be fixed")
+        //console.log("invalidoe", state.invalidIds)
+        state.ids = state.invalidIds
+        state.page = 1;
+        //window.alert("there are errors to be fixed")
+       
         return
       }
-
+     
+        state.ids = Object.keys(state.value)
+        state.page = 1;
       //create combined file
       const newFile = newRegexFile();
       const parent = newFile.querySelector("SettingsGroup");
@@ -83,7 +107,7 @@ export const regexesSlice = createSlice({
       parent.appendChild(regexCountNode);
 
       let regexId = 0;
-      Object.keys(state.value).map((regex) => {
+      state.ids.sort((a,b) => a-b).map((regex) => {
         const settingNode = regexNodeBuilder(state.value[regex], regexId);
         parent.appendChild(settingNode);
         regexId++;
@@ -98,6 +122,14 @@ export const regexesSlice = createSlice({
     },
     setPage(state, action) {
       state.page = action.payload;
+    },
+    resetInvalidIds(state) {
+      state.invalidIds = []
+    },
+    addToInvalidIds(state, action) {
+      if(!state.invalidIds.includes(action.payload)){
+        state.invalidIds = [...state.invalidIds, action.payload]
+      }
     }
   }
 })
@@ -108,11 +140,11 @@ export const { updateRegex, importRegexes, newRegex, removeRegex, combineRegexes
 export const selectRegexByIdAndField = (state, regexId, field) => state.regexes?.value[regexId][field]
 export const selectIds = (state) => state.regexes?.ids
 export const selectPagedRegexes = createSelector(
-  state => state.regexes.value,
+  state => state.regexes.ids,
   state => state.regexes.page,
   state => state.regexes.pageSize,
-  (value, page, pageSize) => {
-    const all = Object.keys(value);
+  (ids, page, pageSize) => {
+    const all = ids;
     const start = (page - 1) * pageSize;
     return all.slice(start, start + pageSize);
   }
@@ -120,5 +152,9 @@ export const selectPagedRegexes = createSelector(
 export const selectTotalPages = (state) => {
   const { value, pageSize } = state.regexes;
   return Math.ceil(Object.keys(value).length / pageSize);
+};
+export const selectHasInvalidEntries = (state) => {
+  
+  return state.regexes?.invalidIds.length > 0;
 };
 export default regexesSlice.reducer
