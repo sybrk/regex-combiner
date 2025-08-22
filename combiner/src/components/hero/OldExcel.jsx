@@ -1,3 +1,6 @@
+import { NavLink } from "react-router";
+import excelFile from "../../assets/Regex.Combiner.1.8.xlsm.zip";
+
 const OldExcel = ({isVisible, observeElement}) => {
 
     return(
@@ -32,14 +35,14 @@ const OldExcel = ({isVisible, observeElement}) => {
                 isVisible['final-cta'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
-              <button className="btn btn-primary btn-lg gap-2 hover:scale-105 transition-all hover:shadow-lg hover:shadow-primary/25">
+              <NavLink className="btn btn-primary btn-lg gap-2 hover:scale-105 transition-all hover:shadow-lg hover:shadow-primary/25" to="/combiner" end>
                 
                 Start online
-              </button>
-              <button className="btn btn-outline btn-lg gap-2 hover:scale-105 transition-all">
+              </NavLink>
+              <a href={excelFile} download={"Regex.Combiner.1.8.xlsm.zip"} className="btn btn-outline btn-lg gap-2 hover:scale-105 transition-all">
                 
                 Download excel
-              </button>
+              </a>
             </div>
             
             <div 

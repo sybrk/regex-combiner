@@ -12,5 +12,6 @@ export default defineConfig({
     mimeTypes: {
       'application/wasm': ['wasm']
     }
-  }
+  },
+  assetsInclude: ["**/*.zip"],
 })
