@@ -22,8 +22,10 @@ const Hero = ({ isVisible, observeElement }) => {
                         <div
                             id="main-heading"
                             ref={observeElement}
-                            className={`transform transition-all duration-1000 delay-300 ${isVisible['main-heading'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-                                }`}
+                            className={"transform transition-all duration-1000 delay-300 " +
+                                (isVisible['main-heading']
+                                    ? "opacity-100 translate-y-0"
+                                    : "opacity-0 translate-y-12")}
                         >
                             <h1 className="text-7xl font-black mb-6">
                                 <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
@@ -37,8 +39,8 @@ const Hero = ({ isVisible, observeElement }) => {
                         <p
                             id="description"
                             ref={observeElement}
-                            className={`text-xl mb-12 text-white/70 max-w-3xl mx-auto leading-relaxed transform transition-all duration-1000 delay-500 ${isVisible['description'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                                }`}
+                            className={"text-xl mb-12 text-white/70 max-w-3xl mx-auto leading-relaxed transform transition-all duration-1000 delay-500 " + (isVisible['description'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                            )}
                         >
                             The most powerful tool for managing Trados Studio regex files. Import multiple files, edit entries,
                             validate regex patterns, and combine into one file seamlessly.
@@ -50,8 +52,8 @@ const Hero = ({ isVisible, observeElement }) => {
                         <div
                             id="cta-buttons"
                             ref={observeElement}
-                            className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-900 ${isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                                }`}
+                            className={"flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-900 " + (isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                            )}
                         >
 
                             <NavLink className="btn btn-primary btn-lg gap-2 hover:scale-105 transition-transform hover:shadow-lg hover:shadow-primary/25" to="/combiner" end>
@@ -62,7 +64,7 @@ const Hero = ({ isVisible, observeElement }) => {
                     </div>
                 </div>
 
-                
+
             </div>
         </>
     )
