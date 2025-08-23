@@ -8,7 +8,7 @@ import { BrowserRouter } from "react-router";
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <BrowserRouter basename="/regex-combiner">
+      <BrowserRouter basename="/regex-combiner/">
         <App />
       </BrowserRouter>
     </Provider>
