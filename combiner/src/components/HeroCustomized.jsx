@@ -192,7 +192,7 @@ const HeroCustomized = () => {
                     <div className={`avatar placeholder mr-4 transition-all duration-300 ${activeFeature === index ? 'scale-110' : ''
                       }`}>
                       <div className={`bg-${feature.color} text-${feature.color}-content rounded-xl w-12`}>
-                        <i className={`${feature.icon} text-xl`}></i>
+                        
                       </div>
                     </div>
                     <h3 className="card-title text-2xl">{feature.title}</h3>
@@ -201,8 +201,8 @@ const HeroCustomized = () => {
                     {feature.description}
                   </p>
                   <div className="card-actions">
-                    <div className={`badge badge-${feature.color} badge-outline gap-2 hover:scale-105 transition-transform`}>
-                      <i className="fas fa-bolt"></i>
+                    <div className={"badge badge-" + (feature.color) + " badge-outline gap-2 hover:scale-105 transition-transform"}>
+                      
                       {feature.badge}
                     </div>
                   </div>

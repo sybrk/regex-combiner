@@ -146,7 +146,7 @@ function Combiner() {
 
       <div className="mx-2 rounded-box border border-base-content/5 bg-base-100">
         <table className="table table-zebra">
-          <thead className='sticky top-0 z-50 bg-base-300 text-base-content'>
+          <thead className='sticky top-16 z-50 bg-base-300 text-base-content'>
             <tr className='text-center'>
               <th>File</th>
               <th>Description</th>

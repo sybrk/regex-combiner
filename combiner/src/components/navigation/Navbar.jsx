@@ -18,9 +18,9 @@ const Navbar = () => {
                         <li><NavLink to="/combiner" end>
                             Combiner
                         </NavLink></li>
-                            <li><a href="./support">
+                            <li><NavLink to="/support" end>
                             Support
-                        </a></li>
+                        </NavLink></li>
                         </ul>
                     </div>
                     <NavLink to={"/"} end className="btn btn-ghost text-xl font-bold text-white">
@@ -45,9 +45,9 @@ const Navbar = () => {
                             </NavLink>
                         </li>
                         <li>
-                            <a className="hover:text-primary transition-all duration-300" href="./support">
+                            <NavLink to="/support" end className="hover:text-primary transition-all duration-300">
                                 Support
-                            </a>
+                            </NavLink>
                         </li>
                     </ul>
                 </div>
