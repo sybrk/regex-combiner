@@ -14,7 +14,7 @@ export default defineConfig({
     }
   },
   assetsInclude: ["**/*.zip"],
-  base: "/regex-combiner/",
+  base: "/regex-combiner",
   build: {
     rollupOptions: {
       input: {

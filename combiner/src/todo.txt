@@ -1,0 +1,3 @@
+figure out hero observer for components
+clean up code
+enhance file import and allow imports to existing import.

@@ -18,22 +18,22 @@ const Navbar = () => {
                         <li><NavLink to="/features" end>
                             Combiner
                         </NavLink></li>
-                            <li><NavLink to="/support" end>
+                            <li><a href="./support">
                             Support
-                        </NavLink></li>
+                        </a></li>
                         </ul>
                     </div>
-                    <button className="btn btn-ghost text-xl font-bold text-white">
+                    <NavLink to={"/"} end className="btn btn-ghost text-xl font-bold text-white">
                         <div className="avatar placeholder mr-2">
                             <div className="bg-primary text-primary-content rounded-lg w-8">
                                 <span className="text-lg font-bold">R</span>
                             </div>
                         </div>
 
-                        <NavLink to="/" end>
+                        
                             RegexCombiner
-                        </NavLink>
-                    </button>
+                        
+                    </NavLink>
                 </div>
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1 text-white">
@@ -45,9 +45,9 @@ const Navbar = () => {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink className="hover:text-primary transition-all duration-300" to="/support" end>
+                            <a className="hover:text-primary transition-all duration-300" href="./support">
                                 Support
-                            </NavLink>
+                            </a>
                         </li>
                     </ul>
                 </div>

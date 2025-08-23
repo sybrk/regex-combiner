@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 
 const HeroV1 = () => {
+
+  // this was created by claude ai
+
   const [isVisible, setIsVisible] = useState({});
   const [activeFeature, setActiveFeature] = useState(0);
   const [stats, setStats] = useState({ files: 0, accuracy: 0, speedup: 0, users: 0 });

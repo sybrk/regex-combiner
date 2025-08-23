@@ -17,11 +17,11 @@ export const regexesSlice = createSlice({
   reducers: {
 
     updateRegex: (state, action) => {
-      console.log("action", action.payload)
+      //console.log("action", action.payload)
       state.value[action.payload.id][action.payload.field] = action.payload.data
     },
     importRegexes: (state, action) => {
-      console.log(action.payload)
+      //console.log(action.payload)
       state.value = action.payload
       state.ids = Object.keys(action.payload).sort((a,b) => a-b)
     },

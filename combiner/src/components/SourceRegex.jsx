@@ -4,7 +4,7 @@ import { selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
 
 const SourceRegex = memo(({ regexId, iframeRef }) => {
 
-  console.log(regexId, "component rendering")
+  //console.log(regexId, "component rendering")
 
   const source = useSelector((state) => selectRegexByIdAndField(state, regexId, "source"))
   const condition = useSelector((state) => selectRegexByIdAndField(state, regexId, "condition"))

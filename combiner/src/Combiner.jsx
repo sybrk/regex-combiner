@@ -27,10 +27,10 @@ function Combiner() {
   const totalPages = useSelector(selectTotalPages);
   const page = useSelector(state => state.regexes.page);
 
-  const [shouldCombine, setShouldCombine] = useState(false);
+  
   const regexCount = useSelector(state => Object.keys(state.regexes.value).length)
   const hasInvalidEntries = useSelector(selectHasInvalidEntries)
-  console.log("invalidoe", hasInvalidEntries)
+  //console.log("invalidoe", hasInvalidEntries)
   const batchValidate = (regexesToValidate) => {
     return new Promise(resolve => {
       let expected = Object.keys(regexesToValidate).length * 2; // source + target
@@ -70,7 +70,7 @@ function Combiner() {
 
     const files = document.getElementById("regexfiles").files
     const result = await regexParserObj(files);
-    console.log("result import", result[1])
+    //console.log("result import", result[1])
     await batchValidate(result)
     dispatch(importRegexes(result))
   }
