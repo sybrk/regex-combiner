@@ -1,7 +1,7 @@
 import { NavLink } from "react-router"
 
 
-const Hero = ({ isVisible, observeElement, observerRef }) => {
+const Hero = ({ isVisible, observeElement }) => {
 
 
     return (

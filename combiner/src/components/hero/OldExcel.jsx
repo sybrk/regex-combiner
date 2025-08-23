@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
 import excelFile from "../../assets/Regex.Combiner.1.8.xlsm.zip";
 
-const OldExcel = ({ isVisible, observeElement, observerRef }) => {
+const OldExcel = ({ isVisible, observeElement }) => {
 
   return (
     <>

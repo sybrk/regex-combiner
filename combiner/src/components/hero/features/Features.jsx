@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const Features = ({ isVisible, observeElement, observerRef }) => {
+const Features = ({ isVisible, observeElement }) => {
 
     const [activeFeature, setActiveFeature] = useState(0);
 
