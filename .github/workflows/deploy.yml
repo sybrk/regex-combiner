@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - onlineVersion   # or master, depending on your repo
-
+permissions:
+  contents: write
 jobs:
   deploy:
     runs-on: ubuntu-latest
