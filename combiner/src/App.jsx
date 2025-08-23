@@ -23,7 +23,7 @@ function App() {
     
     <Navbar />
       <Routes>
-        <Route index element={<HeroV1 />} />
+        <Route index element={<HeroCustomized />} />
         <Route path="combiner" element={<Combiner />} />
         <Route path="support" element={<Support />} />
       </Routes>

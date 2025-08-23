@@ -111,7 +111,7 @@ const HeroCustomized = () => {
             <div
               id="main-heading"
               ref={observeElement}
-              className={"transform transition-all duration-1000 delay-300 " +
+              className={"transform transition-all duration-1000 " +
                 (isVisible['main-heading']
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-12")}
@@ -128,7 +128,7 @@ const HeroCustomized = () => {
             <p
               id="description"
               ref={observeElement}
-              className={"text-xl mb-12 text-white/70 max-w-3xl mx-auto leading-relaxed transform transition-all duration-1000 delay-500 " + (isVisible['description'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              className={"text-xl mb-12 text-white/70 max-w-3xl mx-auto leading-relaxed transform transition-all duration-1000 delay-300 " + (isVisible['description'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               )}
             >
               The most powerful tool for managing Trados Studio regex files. Import multiple files, edit entries,
@@ -141,7 +141,7 @@ const HeroCustomized = () => {
             <div
               id="cta-buttons"
               ref={observeElement}
-              className={"flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-900 " + (isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              className={"flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-500 " + (isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               )}
             >
 
