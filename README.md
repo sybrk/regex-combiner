@@ -1,3 +1,10 @@
+## 🎉 Regex Combiner website is Live!
+
+We just launched **Regex Combiner**!
+All features in version 1.8 and more are now available in a modern web app.
+
+👉 [Try it now!](https://sybrk.github.io/regex-combiner/)
+
 # regex-combiner
 Regex combiner for Trados regex files. You can benefit from this tool if you want to merge multiple Trados regex files into one or want to see your regexes in an excel and keep them updated.
 
