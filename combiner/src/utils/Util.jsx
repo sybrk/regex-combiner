@@ -97,20 +97,21 @@ export const regexParserObj = async (filesArr) => {
     const fileRead = await readFile(file);
     const parseFile = xmlParser(fileRead.fileContent)
     let regexRules = Array.from(parseFile.querySelectorAll("RegExRule"));
-    //console.log("regexrules", regexRules)
+    
     regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement.getAttribute('Id')))
+    console.log("regexrules", regexRules)
     regexRules.map((x, i) => {
-      
+      console.log("processing", x)
       const regexId = id
       regexObj[regexId] = {};
       regexObj[regexId]["file"] = fileRead.fileName;;
-      regexObj[regexId]["description"] = x.querySelector("Description").textContent;
-      regexObj[regexId]["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
-      regexObj[regexId]["source"] = x.querySelector("RegExSource").textContent;
+      regexObj[regexId]["description"] = x.querySelector("Description")?.textContent;
+      regexObj[regexId]["ignoreCase"] = x.querySelector("IgnoreCase")?.textContent;
+      regexObj[regexId]["source"] = x.querySelector("RegExSource")?.textContent;
       regexObj[regexId]["sourceValid"] = null;
-      regexObj[regexId]["target"] = x.querySelector("RegExTarget").textContent;
+      regexObj[regexId]["target"] = x.querySelector("RegExTarget")?.textContent;
       regexObj[regexId]["targetValid"] = null;
-      regexObj[regexId]["condition"] = x.querySelector("RuleCondition").textContent;
+      regexObj[regexId]["condition"] = x.querySelector("RuleCondition")?.textContent;
       id++
     });
   }

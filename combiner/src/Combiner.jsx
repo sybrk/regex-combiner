@@ -70,6 +70,7 @@ function Combiner() {
 
     const files = document.getElementById("regexfiles").files
     const result = await regexParserObj(files);
+    //console.log("result import", result[1])
     await batchValidate(result)
     dispatch(importRegexes(result))
   }
@@ -77,7 +78,10 @@ function Combiner() {
 
 
   const createNew = () => {
-    dispatch(setPage(totalPages))
+    if(totalPages != 0) {
+      dispatch(setPage(totalPages))
+    }
+    
     dispatch(newRegex())
     window.scrollTo(0, document.body.scrollHeight);
   }
