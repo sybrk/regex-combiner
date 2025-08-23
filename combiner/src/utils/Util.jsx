@@ -99,7 +99,7 @@ export const regexParserObj = async (filesArr) => {
     let regexRules = Array.from(parseFile.querySelectorAll("RegExRule"));
     
     regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement.getAttribute('Id')))
-    console.log("regexrules", regexRules)
+    console.log("regexrules", regexRules, "hoo")
     regexRules.map((x, i) => {
       console.log("processing", x)
       const regexId = id

@@ -70,7 +70,7 @@ function Combiner() {
 
     const files = document.getElementById("regexfiles").files
     const result = await regexParserObj(files);
-    //console.log("result import", result[1])
+    console.log("result import", result[1])
     await batchValidate(result)
     dispatch(importRegexes(result))
   }
