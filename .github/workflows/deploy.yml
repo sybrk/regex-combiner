@@ -8,14 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./combiner
     steps:
      
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: enter combiner
-        run: cd combiner
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
