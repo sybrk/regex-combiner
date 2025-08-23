@@ -54,7 +54,7 @@ const HeroCustomized = () => {
         }
       });
     },
-    { threshold: 0, rootMargin: '0px 0px 100px 0px' }
+    { threshold: 0, rootMargin: '0px 0px -50px 0px' }
   );
 
   return () => observerRef.current?.disconnect();
@@ -135,9 +135,7 @@ const HeroCustomized = () => {
             <div
               id="cta-buttons"
               ref={observeElement}
-              className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-100 ${
-                isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
+              className={`flex flex-col sm:flex-row gap-4 justify-center mb-16`}
             >
 
               <NavLink className="btn btn-primary btn-lg gap-2 hover:scale-105 transition-transform hover:shadow-lg hover:shadow-primary/25" to="/combiner" end>
