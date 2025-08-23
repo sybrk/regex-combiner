@@ -108,7 +108,7 @@ const HeroCustomized = () => {
             <div
               id="main-heading"
               ref={observeElement}
-              className={`transform transition-all duration-1000 ${
+              className={`transform transition-all duration-100 ${
                 isVisible['main-heading'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
               }`}
             >
