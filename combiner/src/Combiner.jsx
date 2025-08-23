@@ -104,7 +104,7 @@ function Combiner() {
     <iframe
         id='blazor_regex'
         ref={iframeRef}
-        src="/wwwroot/index.html" // your Blazor WASM build
+        src="/regex-combiner/wwwroot/index.html" // your Blazor WASM build
         style={{ display: "none" }}
       />
       <title>Regex Combiner</title>
