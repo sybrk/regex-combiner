@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-const TradosRegexHero = () => {
+const HeroV1 = () => {
   const [isVisible, setIsVisible] = useState({});
   const [activeFeature, setActiveFeature] = useState(0);
   const [stats, setStats] = useState({ files: 0, accuracy: 0, speedup: 0, users: 0 });
@@ -514,4 +514,4 @@ const TradosRegexHero = () => {
   );
 };
 
-export default TradosRegexHero;
+export default HeroV1;
