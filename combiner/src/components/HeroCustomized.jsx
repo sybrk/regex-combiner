@@ -4,7 +4,7 @@ import Footer from './footer/Footer';
 import { NavLink } from 'react-router';
 
 const HeroCustomized = () => {
-  const [isVisible, setIsVisible] = useState({'main-heading': false});
+  const [isVisible, setIsVisible] = useState({'cta-buttons': true});
 
   const observerRef = useRef();
   const [activeFeature, setActiveFeature] = useState(0);
