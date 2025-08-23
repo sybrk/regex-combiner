@@ -4,7 +4,7 @@ import Footer from './footer/Footer';
 import { NavLink } from 'react-router';
 
 const HeroCustomized = () => {
-  const [isVisible, setIsVisible] = useState({});
+  const [isVisible, setIsVisible] = useState({'main-heading': false});
 
   const observerRef = useRef();
   const [activeFeature, setActiveFeature] = useState(0);
@@ -66,7 +66,7 @@ const HeroCustomized = () => {
           }
         });
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0, rootMargin: '0px 0px -50px 0px' }
     );
 
     return () => observerRef.current?.disconnect();
@@ -111,7 +111,7 @@ const HeroCustomized = () => {
             <div
               id="main-heading"
               ref={observeElement}
-              className={"transform transition-all duration-1000 " +
+              className={"transform transition-all duration-1000" +
                 (isVisible['main-heading']
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-12")}
