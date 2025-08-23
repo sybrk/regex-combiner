@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: 18
           cache: "npm"
+          cache-dependency-path: ./combiner/package-lock.json
 
       
         
@@ -34,4 +35,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist   # change to ./build if using CRA
+          publish_dir: ./combiner/dist   # change to ./build if using CRA
