@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import Navbar from './navigation/Navbar';
 import Hero from './hero/Hero';
 import Features from './hero/features/Features';
 import OldExcel from './hero/OldExcel';
