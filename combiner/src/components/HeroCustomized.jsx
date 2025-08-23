@@ -44,6 +44,23 @@ const HeroCustomized = () => {
     }
   ];
 
+ // Intersection Observer for animations
+ useEffect(() => {
+  observerRef.current = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setIsVisible(prev => ({ ...prev, [entry.target.id]: true }));
+        }
+      });
+    },
+    { threshold: 0, rootMargin: '0px 0px -50px 0px' }
+  );
+
+  return () => observerRef.current?.disconnect();
+}, []);
+
+
   // Auto-rotate feature highlight
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,22 +73,7 @@ const HeroCustomized = () => {
 
 
 
-  // Intersection Observer for animations
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(prev => ({ ...prev, [entry.target.id]: true }));
-          }
-        });
-      },
-      { threshold: 0, rootMargin: '0px 0px -50px 0px' }
-    );
-
-    return () => observerRef.current?.disconnect();
-  }, []);
-
+ 
 
 
 
@@ -88,11 +90,6 @@ const HeroCustomized = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="opacity-0 translate-y-0" />
-      <div className="opacity-100 translate-y-12" />
-
-
-
 
       {/* Hero Section */}
       <div className="hero min-h-screen relative overflow-hidden pt-16">
@@ -128,7 +125,7 @@ const HeroCustomized = () => {
             <p
               id="description"
               ref={observeElement}
-              className={"text-xl mb-12 text-white/70 max-w-3xl mx-auto leading-relaxed transform transition-all duration-1000 delay-100 " + (isVisible['description'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              className={"text-xl mb-12 text-white/70 max-w-3xl mx-auto leading-relaxed transform transition-all duration-500 delay-100 " + (isVisible['description'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               )}
             >
               The most powerful tool for managing Trados Studio regex files. Import multiple files, edit entries,
