@@ -108,10 +108,9 @@ const HeroCustomized = () => {
             <div
               id="main-heading"
               ref={observeElement}
-              className={"transform transition-all duration-500" +
-                (isVisible['main-heading']
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-12")}
+              className={`transform transition-all duration-1000 ${
+                isVisible['main-heading'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+              }`}
             >
               <h1 className="text-7xl font-black mb-6">
                 <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
@@ -138,8 +137,9 @@ const HeroCustomized = () => {
             <div
               id="cta-buttons"
               ref={observeElement}
-              className={"flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-500 " + (isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              )}
+              className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transform transition-all duration-1000 delay-900 ${
+                isVisible['cta-buttons'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
 
               <NavLink className="btn btn-primary btn-lg gap-2 hover:scale-105 transition-transform hover:shadow-lg hover:shadow-primary/25" to="/combiner" end>
@@ -162,16 +162,18 @@ const HeroCustomized = () => {
             <h2
               id="features-title"
               ref={observeElement}
-              className={"text-5xl font-bold mb-6 transform transition-all duration-1000 delay-200 " + (isVisible['features-title'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              )}
+              className={`text-5xl font-bold mb-6 transform transition-all duration-1000 delay-200 ${
+                isVisible['features-title'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
               Everything You Need
             </h2>
             <p
               id="features-desc"
               ref={observeElement}
-              className={"text-xl text-base-content/70 max-w-2xl mx-auto transform transition-all duration-1000 delay-400 " + (isVisible['features-desc'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              )}
+              className={`text-xl text-base-content/70 max-w-2xl mx-auto transform transition-all duration-1000 delay-400 ${
+                isVisible['features-desc'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
               Designed specifically for Trados regex file management
             </p>
@@ -184,11 +186,9 @@ const HeroCustomized = () => {
                 key={feature.title}
                 id={`feature-${index}`}
                 ref={observeElement}
-                className={
-                  "card bg-base-200 shadow-xl hover:shadow-2xl transform transition-all duration-700 hover:-translate-y-2 hover:scale-105 " +
-                  (isVisible[`feature-${index}`] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8") +
-                  (activeFeature === index ? " ring-2 ring-primary ring-opacity-50" : "")
-                }
+                className={`card bg-base-200 shadow-xl hover:shadow-2xl transform transition-all duration-700 hover:-translate-y-2 hover:scale-105 ${
+                  isVisible[`feature-${index}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                } ${activeFeature === index ? 'ring-2 ring-primary ring-opacity-50' : ''}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className="card-body">
@@ -226,17 +226,18 @@ const HeroCustomized = () => {
             <h2
               id="cta-title"
               ref={observeElement}
-              className={"text-5xl font-bold mb-8 transform transition-all duration-1000 delay-200 " +
-                (isVisible['cta-title'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                )}
+              className={`text-5xl font-bold mb-8 transform transition-all duration-1000 delay-200 ${
+                isVisible['cta-title'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
               Looking for old Excel version?
             </h2>
             <p
               id="cta-desc"
               ref={observeElement}
-              className={"text-xl text-base-content/70 mb-12 max-w-2xl mx-auto transform transition-all duration-1000 delay-400 " + (isVisible['cta-desc'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              )}
+              className={`text-xl text-base-content/70 mb-12 max-w-2xl mx-auto transform transition-all duration-1000 delay-400 ${
+                isVisible['cta-desc'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
               While we make the online version better each day, we understand you might still need the Excel version for specific reasons and you can still download it.
             </p>
@@ -244,8 +245,9 @@ const HeroCustomized = () => {
             <div
               id="final-cta"
               ref={observeElement}
-              className={"flex flex-col sm:flex-row gap-4 justify-center mb-8 transform transition-all duration-1000 delay-600 " + (isVisible['final-cta'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              )}
+              className={`flex flex-col sm:flex-row gap-4 justify-center mb-8 transform transition-all duration-1000 delay-600 ${
+                isVisible['final-cta'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
             >
               <NavLink className="btn btn-primary btn-lg gap-2 hover:scale-105 transition-all hover:shadow-lg hover:shadow-primary/25" to="/combiner" end>
 
@@ -260,8 +262,9 @@ const HeroCustomized = () => {
             <div
               id="trust-badges"
               ref={observeElement}
-              className={"text-sm text-base-content/50 transform transition-all duration-1000 delay-800 " + (isVisible['trust-badges'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              )}
+              className={`text-sm text-base-content/50 transform transition-all duration-1000 delay-800 ${
+                isVisible['trust-badges'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
             >
               Excel version might not be fully compliant with .NET regex flavour.
             </div>
