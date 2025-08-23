@@ -52,14 +52,14 @@ const HeroCustomized = () => {
       
 
       {/* Hero Section */}
-      <Hero id="hero" isVisible={isVisible} observeElement={observeElement} />
+      <Hero id="hero" isVisible={isVisible} observeElement={observeElement} observerRef = {observerRef} />
 
       {/* Features Section */}
-      <Features id="features" isVisible={isVisible} observeElement={observeElement}  />
+      <Features id="features" isVisible={isVisible} observeElement={observeElement} observerRef = {observerRef}  />
 
       
       {/* CTA Section */}
-      <OldExcel id="old-excel" isVisible={isVisible} observeElement={observeElement} />
+      <OldExcel id="old-excel" isVisible={isVisible} observeElement={observeElement} observerRef = {observerRef}/>
 
       <Footer />
     </div>

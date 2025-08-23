@@ -1,7 +1,7 @@
 import { NavLink } from "react-router"
 
 
-const Hero = ({ isVisible, observeElement }) => {
+const Hero = ({ isVisible, observeElement, observerRef }) => {
 
 
     return (
@@ -22,11 +22,10 @@ const Hero = ({ isVisible, observeElement }) => {
                         <div
                             id="main-heading"
                             ref={observeElement}
-                            className={[
-                                "transform transition-all duration-1000 delay-300",
-                                "opacity-0 translate-y-12",              // default state
-                                isVisible["main-heading"] && "opacity-100 translate-y-0" // visible state
-                              ].filter(Boolean).join(" ")}
+                            className={"transform transition-all duration-1000 delay-300 " +
+                                (isVisible['main-heading']
+                                    ? "opacity-100 translate-y-0"
+                                    : "opacity-0 translate-y-12")}
                         >
                             <h1 className="text-7xl font-black mb-6">
                                 <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
