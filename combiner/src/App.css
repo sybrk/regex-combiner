@@ -1,2 +1,3 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@source inline('{bg,badge,text}-{primary,secondary,accent,info}')
