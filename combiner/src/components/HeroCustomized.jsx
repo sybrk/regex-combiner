@@ -50,6 +50,7 @@ const HeroCustomized = () => {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
+          //console.log("entry intersect", entry)
           setIsVisible(prev => ({ ...prev, [entry.target.id]: true }));
         }
       });

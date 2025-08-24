@@ -24,6 +24,7 @@ export const regexesSlice = createSlice({
       //console.log(action.payload)
       state.value = action.payload
       state.ids = Object.keys(action.payload).sort((a,b) => a-b)
+      state.page = 1
     },
     newRegex: (state) => {
       //console.log("max", Math.max(Object.keys(state.value)), Object.keys(state.value))

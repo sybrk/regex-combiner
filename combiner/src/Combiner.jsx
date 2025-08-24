@@ -12,13 +12,16 @@ import SourceRegex from './components/SourceRegex'
 import TargetRegex from './components/TargetRegex'
 import ScrollToBottom from './components/ScrollToBottom'
 import ScrollToTop from './components/ScrollToTop'
+import FileInput from './components/fileInput/FileInput'
+import useWaitingHandler from './hooks/useWaitingHandler'
+import WaitingModal from './components/modals/WaitingModal'
 
 
 
 
 function Combiner() {
 
-
+  const [waitingMessage, setWaitingMessage, openModal, closeModal] = useWaitingHandler()
 
   const iframeRef = useRef(null);
   const dispatch = useDispatch()
@@ -48,31 +51,46 @@ function Combiner() {
             resolve();
           }
         }
+        if(event.data?.type === "regex-result" && event.data.section.includes("nopattern")) {
+          received++
+        }
       }
 
       window.addEventListener("message", handler);
 
       // send all regexes
       Object.keys(regexesToValidate).forEach(x => {
+        if(regexesToValidate[x]["source"]) {
+          iframeRef.current.contentWindow.postMessage(
+            { type: "regex", pattern: regexesToValidate[x]["source"], regexId: x, section: "combineSource" },
+            "*"
+          );
+        }
+        if(regexesToValidate[x]["target"]) {
+          iframeRef.current.contentWindow.postMessage(
+            { type: "regex", pattern: regexesToValidate[x]["target"], regexId: x, section: "combineTarget" },
+            "*"
+          );
+        }
         iframeRef.current.contentWindow.postMessage(
-          { type: "regex", pattern: regexesToValidate[x]["source"], regexId: x, section: "combineSource" },
-          "*"
-        );
-        iframeRef.current.contentWindow.postMessage(
-          { type: "regex", pattern: regexesToValidate[x]["target"], regexId: x, section: "combineTarget" },
+          { type: "regex", pattern: "hello", regexId: x, section: "nopattern" },
           "*"
         );
       });
     });
   };
 
-  const importRegex = async () => {
+  const importRegex = async (files) => {
 
-    const files = document.getElementById("regexfiles").files
+    //const files = document.getElementById("regexfiles").files
+    openModal()
+    setWaitingMessage("Importing Regexes")
     const result = await regexParserObj(files);
     //console.log("result import", result[1])
     await batchValidate(result)
     dispatch(importRegexes(result))
+    closeModal()
+
   }
 
 
@@ -93,13 +111,17 @@ function Combiner() {
   }, [shouldCombine]); */
 
   const combine = () => {
+    openModal()
+    setWaitingMessage("Please wait while regexes are validated and output file is created.")
     dispatch(combineRegexes())
+    closeModal()
     //setShouldCombine(true);
   }
 
 
   return (
     <>
+    <WaitingModal message = {waitingMessage} />
     <div className='mt-20'>
     <iframe
         id='blazor_regex'
@@ -108,14 +130,17 @@ function Combiner() {
         style={{ display: "none" }}
       />
       <title>Regex Combiner</title>
-
+      <FileInput 
+        description={"Drag and drop regex files here or click to select."}
+        fileHandler = {importRegex}
+        isMultiple = {true}
+        fileType = {".sdlqasettings"}
+       />
       <div className='mt-5 flex flex-row justify-center gap-4 items-center'>
-        <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
-        <button className="btn btn-primary" onClick={importRegex}>Import</button>
+        {/* <input className="file-input file-input-primary" type="file" name="regexfiles" id="regexfiles" multiple />
+        <button className="btn btn-primary" onClick={importRegex}>Import</button> */}
         <p>
-
-
-          {regexCount}
+          Regex Count: {regexCount}
         </p>
         <button className={"btn btn-success rounded-2xl"} onClick={createNew}>+</button>
         <button className={"btn btn-success rounded-2xl " + (!regexes.length && "btn-disabled")} onClick={combine}>Combine</button>
@@ -145,7 +170,7 @@ function Combiner() {
       </div>
 
       <div className="mx-2 rounded-box border border-base-content/5 bg-base-100">
-        <table className="table table-zebra">
+        <table className="table">
           <thead className='sticky top-16 z-50 bg-base-300 text-base-content'>
             <tr className='text-center'>
               <th>File</th>
