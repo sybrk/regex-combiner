@@ -32,7 +32,7 @@
             pattern
           );
           // Send result back to parent
-          //console.log("message received")
+          console.log("message received")
           event.source.postMessage({ type: "regex-result", result, regexId, section }, event.origin);
         }
       });</script>
