@@ -21,6 +21,7 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
       //console.log(event.data)
       if (event.data?.type === "regex-result" && event.data.regexId === regexId  && event.data.section === "source") {
         dispatch(updateRegex({ id: regexId, field: "sourceValid", data: event.data.result }))
+        //console.log("validosource", sourceValid)
       }
     }
   
@@ -50,13 +51,19 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
 
 
     return (
+      <>
+      
       <textarea
         className={"textarea " + (sourceValid != null && !sourceValid && "textarea-error text-error")}
         value={source}
         onChange={onChange}
-
         disabled={condition == "TargetOnly"}
       />
+      <p className={"text-error text-sm mt-1 " + ((sourceValid != null && !sourceValid) ? "" : "hidden")}>
+        Source regex is not valid. Please fix it.
+      </p>
+      </>
+      
     );
   });
   export default SourceRegex

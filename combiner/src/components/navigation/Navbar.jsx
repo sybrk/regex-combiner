@@ -1,4 +1,5 @@
 import { NavLink } from "react-router"
+import regexIcon from "../../assets/regexIcon.svg"
 
 const Navbar = () => {
 
@@ -25,8 +26,9 @@ const Navbar = () => {
                     </div>
                     <NavLink to={"/"} end className="btn btn-ghost text-xl font-bold text-white">
                         <div className="avatar placeholder mr-2">
-                            <div className="bg-primary text-primary-content rounded-lg w-8">
-                                <span className="text-lg font-bold">R</span>
+                            
+                            <div className="text-primary-content rounded-lg w-8">
+                            <img src={regexIcon} />
                             </div>
                         </div>
 

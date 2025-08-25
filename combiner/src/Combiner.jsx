@@ -1,11 +1,10 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 
 import { regexParserObj, } from './utils/Util'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { combineRegexes, importRegexes, newRegex, removeRegex, selectHasInvalidEntries, selectIds, selectPagedRegexes, selectTotalPages, setPage } from './features/regexesSlice'
-import EditableSelect from './components/EditableSelect'
+import { combineRegexes, importRegexes, newRegex, removeRegex, selectHasInvalidEntries, selectPagedRegexes, selectTotalPages, setPage } from './features/regexesSlice'
 import RegexFile from './components/RegexFile'
 import Description from './components/Description'
 import SourceRegex from './components/SourceRegex'
@@ -15,7 +14,7 @@ import ScrollToTop from './components/ScrollToTop'
 import FileInput from './components/fileInput/FileInput'
 import useWaitingHandler from './hooks/useWaitingHandler'
 import WaitingModal from './components/modals/WaitingModal'
-
+import EditableSelect from './components/EditableSelect'
 
 
 
@@ -39,8 +38,10 @@ function Combiner() {
       let expected = Object.keys(regexesToValidate).length * 2; // source + target
       let received = 0;
       function handler(event) {
+        
         if (event.data?.type === "regex-result" && event.data.section.includes("combine")) {
           received++;
+          //console.log("about to set", regexesToValidate[event.data.regexId])
           regexesToValidate[event.data.regexId][event.data.section == "combineSource" ? "sourceValid" : "targetValid"] = event.data.result
           if (!(event.data.result)) {
             regexesToValidate[event.data.regexId]["hasIssues"] = regexesToValidate[event.data.regexId]["hasIssues"] != true && true
@@ -65,17 +66,25 @@ function Combiner() {
             { type: "regex", pattern: regexesToValidate[x]["source"], regexId: x, section: "combineSource" },
             "*"
           );
+        } else {
+          iframeRef.current.contentWindow.postMessage(
+            { type: "regex", pattern: "hello", regexId: x, section: "nopattern" },
+            "*"
+          );
+
         }
         if(regexesToValidate[x]["target"]) {
           iframeRef.current.contentWindow.postMessage(
             { type: "regex", pattern: regexesToValidate[x]["target"], regexId: x, section: "combineTarget" },
             "*"
           );
+        } else {
+          iframeRef.current.contentWindow.postMessage(
+            { type: "regex", pattern: "hello", regexId: x, section: "nopattern" },
+            "*"
+          );
         }
-        iframeRef.current.contentWindow.postMessage(
-          { type: "regex", pattern: "hello", regexId: x, section: "nopattern" },
-          "*"
-        );
+        
       });
     });
   };
@@ -86,8 +95,9 @@ function Combiner() {
     openModal()
     setWaitingMessage("Importing Regexes")
     const result = await regexParserObj(files);
-    //console.log("result import", result[1])
+    
     await batchValidate(result)
+    //console.log("result import", result)
     dispatch(importRegexes(result))
     closeModal()
 
@@ -110,7 +120,8 @@ function Combiner() {
     setShouldCombine(false); // Reset flag
   }, [shouldCombine]); */
 
-  const combine = () => {
+  const combine = (e) => {
+    e.preventDefault()
     openModal()
     setWaitingMessage("Please wait while regexes are validated and output file is created.")
     dispatch(combineRegexes())

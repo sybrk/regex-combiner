@@ -1,3 +1,5 @@
+import regexIcon from "../../assets/regexIcon.svg"
+
 const Footer = () => {
 
     return (
@@ -6,8 +8,8 @@ const Footer = () => {
             <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
                 <aside>
                     <div className="avatar placeholder mr-2">
-                        <div className="bg-secondary text-primary-content rounded-lg w-8">
-                            <span className="text-lg font-bold">R</span>
+                        <div className="text-primary-content rounded-lg w-8">
+                        <img src={regexIcon} />
                         </div>
                     </div>
                     <p className="font-bold">

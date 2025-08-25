@@ -21,12 +21,19 @@ const Description = memo(({ regexId }) => {
    
     
     return (
+      <>
+      
       <textarea
         className={"textarea " + (((duplicates && duplicates.includes(descriptionField)) ||  !descriptionField.length) && "textarea-error text-error")}
         value={descriptionField}
+        placeholder="Please enter a description."
         onChange={onChange}
         
       />
+      <p className={"text-error text-sm mt-1 " + ((duplicates && duplicates.includes(descriptionField)) ? "" : "hidden")}>
+        Duplicate description, please fix it and try again.
+      </p>
+      </>
     );
   });
 export default Description

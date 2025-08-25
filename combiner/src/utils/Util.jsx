@@ -105,11 +105,11 @@ export const regexParserObj = async (filesArr) => {
       const regexId = id
       regexObj[regexId] = {};
       regexObj[regexId]["file"] = fileRead.fileName;;
-      regexObj[regexId]["description"] = x.querySelector("Description")?.textContent;
-      regexObj[regexId]["ignoreCase"] = x.querySelector("IgnoreCase")?.textContent;
-      regexObj[regexId]["source"] = x.querySelector("RegExSource")?.textContent;
+      regexObj[regexId]["description"] = x.querySelector("Description").textContent;
+      regexObj[regexId]["ignoreCase"] = x.querySelector("IgnoreCase").textContent;
+      regexObj[regexId]["source"] = x.querySelector("RegExSource")?.textContent ?? "";
       regexObj[regexId]["sourceValid"] = null;
-      regexObj[regexId]["target"] = x.querySelector("RegExTarget")?.textContent;
+      regexObj[regexId]["target"] = x.querySelector("RegExTarget")?.textContent ?? "";
       regexObj[regexId]["targetValid"] = null;
       regexObj[regexId]["condition"] = x.querySelector("RuleCondition")?.textContent;
       id++
