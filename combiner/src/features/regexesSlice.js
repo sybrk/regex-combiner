@@ -90,7 +90,7 @@ export const regexesSlice = createSlice({
       }
       if(!combine) {
         //console.log("invalidoe", state.invalidIds)
-        state.ids = state.invalidIds
+        state.ids = [...state.invalidIds]
         state.page = 1;
         //window.alert("there are errors to be fixed")
        
@@ -132,12 +132,26 @@ export const regexesSlice = createSlice({
       if(!state.invalidIds.includes(action.payload)){
         state.invalidIds = [...state.invalidIds, action.payload]
       }
+    },
+    searchByDescription(state, action) {
+      const result = Object.keys(state.value).filter(x => state.value[x]["description"].search(new RegExp(action.payload, "i")) != -1)
+      state.ids = [...result]
+      state.page = 1;
+    },
+    removeFilters(state) {
+      
+      state.ids = [...Object.keys(state.value)]
+      state.page = 1;
+    },
+    removeAllRegexes() {
+      
+      return regexesSlice.getInitialState()
     }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { updateRegex, importRegexes, newRegex, removeRegex, combineRegexes, setPage } = regexesSlice.actions
+export const { updateRegex, importRegexes, newRegex, removeRegex, combineRegexes, setPage, searchByDescription, removeFilters, removeAllRegexes } = regexesSlice.actions
 
 export const selectRegexByIdAndField = (state, regexId, field) => state.regexes?.value[regexId][field]
 export const selectIds = (state) => state.regexes?.ids
