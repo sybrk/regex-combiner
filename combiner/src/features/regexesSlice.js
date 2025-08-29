@@ -22,9 +22,24 @@ export const regexesSlice = createSlice({
     },
     importRegexes: (state, action) => {
       //console.log(action.payload)
-      state.value = action.payload
-      state.ids = Object.keys(action.payload).sort((a,b) => a-b)
-      state.page = 1
+      if(state.ids.length) {
+        const lastId = state.ids[state.ids.length -1];
+        const comingIds = Object.keys(action.payload).sort((a,b) => a-b)
+        const newIds = comingIds.map(x => parseInt(x) + parseInt(lastId))
+        const tmpObj = {}
+        for (let i = 0; i < newIds.length; i++) {
+          const element = newIds[i];
+          tmpObj[element] = action.payload[comingIds[i]]
+        }
+        //console.log("ekleniyor", {...tmpObj})
+        state.value = {...state.value, ...tmpObj}
+        state.ids = Object.keys(state.value).sort((a,b) => a-b)
+      } else {
+        state.value = action.payload
+        state.ids = Object.keys(action.payload).sort((a,b) => a-b)
+        state.page = 1
+      }
+      
     },
     newRegex: (state) => {
       //console.log("max", Math.max(Object.keys(state.value)), Object.keys(state.value))

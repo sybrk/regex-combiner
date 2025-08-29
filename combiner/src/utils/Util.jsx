@@ -91,7 +91,7 @@ export const regexParser = async (filesArr) => {
 
 export const regexParserObj = async (filesArr) => {
   const regexObj = {}
-  let id = 0;
+  let id = 1;
   for (let index = 0; index < filesArr.length; index++) {
     const file = filesArr[index];
     const fileRead = await readFile(file);

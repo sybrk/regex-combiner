@@ -58,6 +58,7 @@ const SourceRegex = memo(({ regexId, iframeRef }) => {
         value={source}
         onChange={onChange}
         disabled={condition == "TargetOnly"}
+        spellCheck={false}
       />
       <p className={"text-error text-sm mt-1 " + ((sourceValid != null && !sourceValid) ? "" : "hidden")}>
         Source regex is not valid. Please fix it.

@@ -56,6 +56,7 @@ const TargetRegex = memo(({ regexId, iframeRef }) => {
         onChange={onChange}
         
         disabled={condition == "SourceOnly"}
+        spellCheck={false}
       />
       <p className={"text-error text-sm mt-1 " + ((targetValid != null && !targetValid) ? "" : "hidden")}>
         Target regex is not valid. Please fix it.
