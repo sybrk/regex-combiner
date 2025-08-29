@@ -2,12 +2,12 @@ import { useState } from "react"
 
 const useWaitingHandler = () => {
     const [waitingMessage, setWaitingMessage] = useState("")
-    let waitingModal = document.getElementById("my-waiting-modal")
+    
     function closeModal() {
-        waitingModal.close();
+        document.getElementById("my-waiting-modal").close();
     }
     function openModal() {
-        waitingModal?.showModal();
+        document.getElementById("my-waiting-modal").showModal();
     }
 
     return [waitingMessage, setWaitingMessage, openModal, closeModal]

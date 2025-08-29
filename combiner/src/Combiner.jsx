@@ -148,7 +148,7 @@ function Combiner() {
         />
         <title>Regex Combiner</title>
         <FileInput
-          description={"Drag and drop regex files here or click to select."}
+          description={"Drag and drop .sdlqasettings files here or click to select."}
           fileHandler={importRegex}
           isMultiple={true}
           fileType={".sdlqasettings"}

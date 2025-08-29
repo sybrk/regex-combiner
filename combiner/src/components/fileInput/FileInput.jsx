@@ -45,7 +45,7 @@ const FileInput = (props) => {
 
   return (
     <>
-      <div className="w-full max-w-md mx-auto bg-neutral">
+      <div className="w-full max-w-lg mx-auto bg-neutral">
         <div
           className={`relative border-2 border-dashed rounded-lg p-4 text-center ${
             isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
