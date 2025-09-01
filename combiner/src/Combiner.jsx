@@ -15,6 +15,8 @@ import FileInput from './components/fileInput/FileInput'
 import useWaitingHandler from './hooks/useWaitingHandler'
 import WaitingModal from './components/modals/WaitingModal'
 import EditableSelect from './components/EditableSelect'
+import DetailedRegex from './components/DetailedRegex'
+import RegexHighlighter from './components/Highlighter'
 
 
 
@@ -138,6 +140,8 @@ function Combiner() {
 
   return (
     <>
+    
+    <DetailedRegex />
       <WaitingModal message={waitingMessage} />
       <div className='mt-20'>
         <iframe
@@ -261,6 +265,7 @@ function Combiner() {
                 : null}
             </tbody>
           </table>
+          
           <ScrollToBottom />
           <ScrollToTop />
         </div >
