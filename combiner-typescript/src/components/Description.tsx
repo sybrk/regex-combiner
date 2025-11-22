@@ -1,17 +1,19 @@
-import { memo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {  selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
+import { memo, type ChangeEvent } from "react";
+import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
+import { selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
 
-const Description = memo(({ regexId }) => {
 
+const Description = memo((props: {regexId: string}) => {
+
+  const {regexId} = props
   //console.log(regexId,  "component rendering")
     
-  const descriptionField = useSelector((state) => selectRegexByIdAndField(state, regexId, "description"))
-  const duplicates = useSelector((state) => state.regexes.duplicates)
-  const dispatch = useDispatch()
+  const descriptionField = useAppSelector((state) => selectRegexByIdAndField(state.regexes, regexId, "description")) as string
+  const duplicates = useAppSelector((state) => state.regexes.duplicates)
+  const dispatch = useAppDispatch()
   
     
-    const onChange = (e) => {
+    const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       dispatch(updateRegex({id: regexId, field: "description", data: e.target.value}))
       if((duplicates && duplicates.includes(descriptionField)) || !descriptionField.length) {
         dispatch(updateRegex({id: regexId, field: "hasIssues", data: true}))

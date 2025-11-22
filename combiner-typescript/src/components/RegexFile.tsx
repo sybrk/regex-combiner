@@ -1,11 +1,11 @@
+import { selectRegexByIdAndField } from "../features/regexesSlice";
+import { useAppSelector } from "../hooks/reduxHooks";
 
-import {  useSelector } from "react-redux";
-import {  selectRegexByIdAndField } from "../features/regexesSlice";
 
-const RegexFile = ({ regexId }) => {
+const RegexFile = (props: {regexId: string}) => {
 
-  
-  const regexField = useSelector((state) => selectRegexByIdAndField(state, regexId, "file"))
+  const {regexId} = props
+  const regexField = useAppSelector(state => selectRegexByIdAndField(state.regexes,regexId, "file"))
     
    
     

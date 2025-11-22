@@ -1,45 +1,37 @@
-import { useState } from "react";
-import DownwardArrowIcon from "./DownwardArrow";
+import { useState, type ChangeEvent, type DragEvent } from "react";
 
 
-const FileInput = (props) => {
+const FileInput = (props : { isMultiple: boolean, fileHandler: Function, description: string, fileType: string }) => {
   const { isMultiple, fileHandler, description, fileType } = props;
   const [isDragging, setIsDragging] = useState(false);
   
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e) => {
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
   };
 
-  const handleDrop = async (e) => {
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-
-    const files = isMultiple ? e.dataTransfer.files : e.dataTransfer.files[0];
+    const dataTransfer = e.dataTransfer;
+    const files = isMultiple ? dataTransfer.files : (dataTransfer.files[0] ? dataTransfer.files[0] : null);
     await handleFiles(files);
   };
 
-  const handleFileInput = async (e) => {
-    const files = isMultiple ? e.target.files : e.target.files[0];
+  const handleFileInput = async (e: ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    const files = isMultiple ? target.files : (target.files?.[0] ? [target.files[0]] : null);
     await handleFiles(files);
   };
 
-  const handleFiles = async (files) => {
-    //console.log("files", files);
-    if(files.length) {
-      
-      
-    }
-    if(typeof files === "object" && files.length === undefined) {
-      
-      
-    }
+  const handleFiles = async (files: FileList | File[] | null | File) => {
+    
     await fileHandler(files);
   };
 

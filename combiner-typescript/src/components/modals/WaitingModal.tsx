@@ -1,5 +1,5 @@
 
-const WaitingModal = (props) => {
+const WaitingModal = (props:  { message: string }) => {
 
     const { message } = props
     return (

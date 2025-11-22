@@ -1,8 +1,10 @@
 import { memo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
+import type { RegexRecord } from "../utils/Util";
 
-const EditableSelect = memo(({ regexId, field, options }) => {
+
+const EditableSelect = memo((props: { regexId: string, field: keyof RegexRecord, options }) => {
+
+  const { regexId, field, options } = props
   const regexField = useSelector((state) => selectRegexByIdAndField(state, regexId, field))
   const dispatch = useDispatch()
     

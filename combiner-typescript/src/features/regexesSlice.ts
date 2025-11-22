@@ -1,27 +1,16 @@
 import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import { generateIdFiveChar, newRegexFile, regexNodeBuilder } from '../utils/Util'
+
 import { saveAs } from 'file-saver'
+import { newRegexFile, regexNodeBuilder, type RegexRecord, type RegexRecordCollection } from '../utils/Util'
 
 // Define a type for the slice state
 export interface RegexesState {
   ids: string[],
-  value: Record<string, RegexStateType>
+  value: RegexRecordCollection
   duplicates: string[],
   invalidIds: string[],
   page: number,
   pageSize: number
-}
-
-type RegexStateType = {
-  file: string,
-  description: string,
-  ignoreCase: "true" | "false",
-  source: string | null,
-  sourceValid: boolean | null,
-  target: string | null,
-  targetValid: boolean | null,
-  condition: "TargetAndSource" | "TargetNotSource" | "SourceNotTarget" | "SourceOnly" | "TargetOnly" | "DifferentCount" | "GroupedSourceNotTarget" | "GroupedTargetAndSource",
-  hasIssues: boolean | null
 }
 
 
@@ -35,10 +24,10 @@ const initialState: RegexesState = {
   page: 0,
   pageSize: 100
 }
-type RegexPayload<K extends keyof RegexStateType = keyof RegexStateType> = {
+type RegexPayload<K extends keyof RegexRecord = keyof RegexRecord> = {
   id: string;
   field: K;
-  data: RegexStateType[K];
+  data: RegexRecord[K];
 }
 
 export const regexesSlice = createSlice({
@@ -54,13 +43,13 @@ export const regexesSlice = createSlice({
       }
       
     },
-    importRegexes: (state, action: PayloadAction<Record<string, RegexStateType>>) => {
+    importRegexes: (state, action: PayloadAction<RegexRecordCollection>) => {
       //console.log(action.payload)
       if(state.ids.length) {
         const lastId = state.ids[state.ids.length -1];
         const comingIds = Object.keys(action.payload).sort((a,b) => Number(a)-Number(b))
         const newIds = comingIds.map(x => (parseInt(x) + parseInt(lastId)).toString())
-        const tmpObj : Record<string, RegexStateType> = {}
+        const tmpObj : RegexRecordCollection = {}
         for (let i = 0; i < newIds.length; i++) {
           const element = newIds[i];
           tmpObj[element] = action.payload[comingIds[i]]
@@ -165,12 +154,12 @@ export const regexesSlice = createSlice({
       const regexCountNode = document.createElementNS("", "Setting");
       regexCountNode.setAttribute("Id", "RegExRulesCount");
       regexCountNode.textContent = regexCount.toString();
-      parent.appendChild(regexCountNode);
+      parent?.appendChild(regexCountNode);
 
       let regexId = 0;
       state.ids.sort((a,b) => Number(a)-Number(b)).map((regex) => {
-        const settingNode = regexNodeBuilder(state.value[regex], regexId);
-        parent.appendChild(settingNode);
+        const settingNode = regexNodeBuilder(state.value[regex], regexId.toString());
+        parent?.appendChild(settingNode);
         regexId++;
       });
 
@@ -181,18 +170,18 @@ export const regexesSlice = createSlice({
       });
       saveAs(fileToDownload);
     },
-    setPage(state, action) {
+    setPage(state, action: PayloadAction<number>) {
       state.page = action.payload;
     },
     resetInvalidIds(state) {
       state.invalidIds = []
     },
-    addToInvalidIds(state, action) {
+    addToInvalidIds(state, action: PayloadAction<string>) {
       if(!state.invalidIds.includes(action.payload)){
         state.invalidIds = [...state.invalidIds, action.payload]
       }
     },
-    searchByDescription(state, action) {
+    searchByDescription(state, action: PayloadAction<string>) {
       const result = Object.keys(state.value).filter(x => state.value[x]["description"].search(new RegExp(action.payload, "i")) != -1)
       state.ids = [...result]
       state.page = 1;
@@ -212,7 +201,7 @@ export const regexesSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { updateRegex, importRegexes, newRegex, removeRegex, combineRegexes, setPage, searchByDescription, removeFilters, removeAllRegexes } = regexesSlice.actions
 
-export const selectRegexByIdAndField = (state: RegexesState, regexId: string, field: keyof RegexStateType) => state.value[regexId][field]
+export const selectRegexByIdAndField = (state: RegexesState, regexId: string, field: keyof RegexRecord)  => state.value[regexId][field]
 export const selectIds = (state: RegexesState) => state.ids
 export const selectPagedRegexes = createSelector(
   state => state.regexes.ids,
@@ -224,12 +213,14 @@ export const selectPagedRegexes = createSelector(
     return all.slice(start, start + pageSize);
   }
 );
-export const selectTotalPages = (state: RegexesState) => {
-  const { value, pageSize } = state;
-  return Math.ceil(Object.keys(value).length / pageSize);
-};
-export const selectHasInvalidEntries = (state: RegexesState) => {
-  
-  return state.invalidIds.length > 0;
-};
+
+export const selectTotalPages = createSelector(
+  state => state.regexes.value,
+  state => state.regexes.pageSize,
+  (value, pageSize) => {
+
+    return Math.ceil(Object.keys(value).length / pageSize)
+  }
+);
+
 export default regexesSlice.reducer

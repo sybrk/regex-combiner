@@ -1,6 +1,9 @@
 import { Route, Routes } from 'react-router'
 import './App.css'
 import Navbar from './components/navigation/Navbar'
+import Combiner from './components/combiner/Combiner'
+import HeroCustomized from './components/HeroCustomized'
+import Support from './components/support/Support'
 
 function App() {
 

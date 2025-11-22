@@ -1,15 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 
+export interface MessageState {
+    waitingMessage: string,
+    showWaitingMessage: boolean
+}
+
+const initialState: MessageState = {
+    waitingMessage : "",
+    showWaitingMessage: false
+}
 export const messagesSlice = createSlice({
     name: 'messages',
-    initialState: {
-        waitingMessage: "",
-        showWaitingMessage: false
-    },
+    initialState,
     reducers: {
 
-        updateWaitingMessage: (state, action) => {
+        updateWaitingMessage: (state, action: PayloadAction<string>) => {
 
             state.waitingMessage = action.payload
         },

@@ -1,21 +1,17 @@
-import { useRef } from 'react'
+import { useRef, type MouseEvent} from 'react'
 
 
-import { regexParserObj, } from './utils/Util'
+import { combineRegexes , importRegexes, newRegex, removeAllRegexes, removeFilters, removeRegex, searchByDescription, selectPagedRegexes, selectTotalPages, setPage} from '../../features/regexesSlice';
+import useWaitingHandler from '../../hooks/useWaitingHandler';
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { regexParserObj, type RegexRecordCollection } from '../../utils/Util';
+import WaitingModal from '../modals/WaitingModal';
+import FileInput from '../fileInput/FileInput';
+import RegexFile from '../RegexFile';
+import Description from '../Description';
+import IgnoreCase from '../IgnoreCase';
+import Condition from '../Condition';
 
-import { useDispatch, useSelector } from 'react-redux'
-import { combineRegexes, importRegexes, newRegex, removeAllRegexes, removeFilters, removeRegex, searchByDescription, selectHasInvalidEntries, selectPagedRegexes, selectTotalPages, setPage } from './features/regexesSlice'
-import RegexFile from './components/RegexFile'
-import Description from './components/Description'
-import SourceRegex from './components/SourceRegex'
-import TargetRegex from './components/TargetRegex'
-import ScrollToBottom from './components/ScrollToBottom'
-import ScrollToTop from './components/ScrollToTop'
-import FileInput from './components/fileInput/FileInput'
-import useWaitingHandler from './hooks/useWaitingHandler'
-import WaitingModal from './components/modals/WaitingModal'
-import EditableSelect from './components/EditableSelect'
-import DetailedRegex from './components/DetailedRegex'
 
 
 
@@ -23,22 +19,22 @@ function Combiner() {
 
   const [waitingMessage, setWaitingMessage, openModal, closeModal] = useWaitingHandler()
 
-  const iframeRef = useRef(null);
-  const dispatch = useDispatch()
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const dispatch = useAppDispatch()
   //const regexes = useSelector((state) => selectIds(state))
-  const regexes = useSelector(selectPagedRegexes);
-  const totalPages = useSelector(selectTotalPages);
-  const page = useSelector(state => state.regexes.page);
+  const regexes = useAppSelector(selectPagedRegexes);
+  const totalPages = useAppSelector(selectTotalPages);
+  const page = useAppSelector(state => state.regexes.page);
 
 
-  const regexCount = useSelector(state => Object.keys(state.regexes.value).length)
-  const hasInvalidEntries = useSelector(selectHasInvalidEntries)
+  const regexCount = useAppSelector(state => Object.keys(state.regexes.value).length)
+  const hasInvalidEntries = useAppSelector(state => state.regexes.invalidIds.length > 0)
   //console.log("invalidoe", hasInvalidEntries)
-  const batchValidate = (regexesToValidate) => {
+  const batchValidate = (regexesToValidate: RegexRecordCollection) => {
     return new Promise(resolve => {
       let expected = Object.keys(regexesToValidate).length * 2; // source + target
       let received = 0;
-      function handler(event) {
+      function handler(event: MessageEvent) {
 
         if (event.data?.type === "regex-result" && event.data.section.includes("combine")) {
           received++;
@@ -50,7 +46,7 @@ function Combiner() {
 
           if (received === expected) {
             window.removeEventListener("message", handler);
-            resolve();
+            resolve(null);
           }
         }
         if (event.data?.type === "regex-result" && event.data.section.includes("nopattern")) {
@@ -63,24 +59,24 @@ function Combiner() {
       // send all regexes
       Object.keys(regexesToValidate).forEach(x => {
         if (regexesToValidate[x]["source"]) {
-          iframeRef.current.contentWindow.postMessage(
+          iframeRef.current?.contentWindow?.postMessage(
             { type: "regex", pattern: regexesToValidate[x]["source"], regexId: x, section: "combineSource" },
             "*"
           );
         } else {
-          iframeRef.current.contentWindow.postMessage(
+          iframeRef.current?.contentWindow?.postMessage(
             { type: "regex", pattern: "hello", regexId: x, section: "nopattern" },
             "*"
           );
 
         }
         if (regexesToValidate[x]["target"]) {
-          iframeRef.current.contentWindow.postMessage(
+          iframeRef.current?.contentWindow?.postMessage(
             { type: "regex", pattern: regexesToValidate[x]["target"], regexId: x, section: "combineTarget" },
             "*"
           );
         } else {
-          iframeRef.current.contentWindow.postMessage(
+          iframeRef.current?.contentWindow?.postMessage(
             { type: "regex", pattern: "hello", regexId: x, section: "nopattern" },
             "*"
           );
@@ -90,10 +86,10 @@ function Combiner() {
     });
   };
 
-  const importRegex = async (files) => {
+  const importRegex = async (files: File[]) => {
 
     //const files = document.getElementById("regexfiles").files
-    openModal()
+    
     setWaitingMessage("Importing Regexes")
     const result = await regexParserObj(files);
 
@@ -121,7 +117,7 @@ function Combiner() {
      setShouldCombine(false); // Reset flag
    }, [shouldCombine]); */
 
-  const combine = (e) => {
+  const combine = (e : MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     openModal()
     setWaitingMessage("Please wait while regexes are validated and output file is created.")
@@ -130,17 +126,17 @@ function Combiner() {
     //setShouldCombine(true);
   }
 
-  const searchDescriptions = (e) => {
+  const searchDescriptions = (e: React.FormEvent) => {
     e.preventDefault()
-    const searchTerm = document.getElementById("description-search").value
-    dispatch(searchByDescription(searchTerm))
-    document.getElementById("description-search").value = ""
+    const searchTerm = (document.getElementById("description-search") as HTMLInputElement)?.value
+    dispatch(searchByDescription(searchTerm));
+    (document.getElementById("description-search") as HTMLInputElement).value = ""
   }
 
   return (
     <>
     
-    <DetailedRegex />
+    
       <WaitingModal message={waitingMessage} />
       <div className='mt-20'>
         <iframe
@@ -194,7 +190,7 @@ function Combiner() {
             <button className={"join-item btn " + (page === 1 && "btn-disabled")}
               onClick={() => dispatch(setPage(page - 1))}
             >«</button>
-            <button className="join-item btn">{page + (totalPages > 0 && (" / " + totalPages))}</button>
+            <button className="join-item btn">{page.toString() + (totalPages > 0 && (" / " + totalPages))}</button>
             <button className={"join-item btn " + ((page === totalPages || totalPages == 0) && "btn-disabled")}
               onClick={() => dispatch(setPage(page + 1))}
             >»</button>
@@ -225,7 +221,7 @@ function Combiner() {
             </thead>
             <tbody>
               {regexes
-                ? regexes.map((regex, i) => {
+                ? regexes.map((regex: string, i) => {
                   //console.log("this is rendered again", regex)
                   return (
                     <tr className="" key={regex} data-regex-id={regex}>
@@ -235,7 +231,7 @@ function Combiner() {
 
                       </td>
                       <td>
-                        <EditableSelect regexId={regex} field={"ignoreCase"} options={["true", "false"]} />
+                        <IgnoreCase regexId={regex} />
                       </td>
                       <td className='wrap-anywhere'>
                         <SourceRegex regexId={regex} iframeRef={iframeRef} />
@@ -244,14 +240,14 @@ function Combiner() {
                         <TargetRegex regexId={regex} iframeRef={iframeRef} />
                       </td>
                       <td className=''>
-                        <EditableSelect regexId={regex} field={"condition"} options={["TargetAndSource", "TargetNotSource", "SourceNotTarget", "SourceOnly", "TargetOnly", "DifferentCount", "GroupedSourceNotTarget", "GroupedTargetAndSource"]} />
+                        <Condition regexId={regex} />
 
 
                       </td>
                       <td>
                         <button
                           data-regex-id={regex}
-                          onClick={() => dispatch(removeRegex({ regexId: regex }))} className="btn btn-sm rounded-2xl btn-error"
+                          onClick={() => dispatch(removeRegex(regex))} className="btn btn-sm rounded-2xl btn-error"
                         >
                           x
                         </button>

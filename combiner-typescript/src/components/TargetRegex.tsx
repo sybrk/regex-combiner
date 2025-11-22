@@ -1,22 +1,25 @@
-import { memo, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {  selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
+import { memo, useEffect, type ChangeEvent } from "react";
+import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
+import { selectRegexByIdAndField, updateRegex } from "../features/regexesSlice";
 
-const TargetRegex = memo(({ regexId, iframeRef }) => {
+
+const TargetRegex = memo((props: { regexId: string, iframeRef: React.RefObject<HTMLIFrameElement | null> }) => {
 
   //console.log(regexId,  "component rendering")
+
+  const { regexId, iframeRef } = props
     
-  const target = useSelector((state) => selectRegexByIdAndField(state, regexId, "target"))
-  const condition = useSelector((state) => selectRegexByIdAndField(state, regexId, "condition"))
-  const dispatch = useDispatch()
-  const targetValid = useSelector((state) => selectRegexByIdAndField(state, regexId, "targetValid"))
+  const target = useAppSelector((state) => selectRegexByIdAndField(state.regexes, regexId, "target")) as string
+  const condition = useAppSelector((state) => selectRegexByIdAndField(state.regexes, regexId, "condition")) as string
+  const dispatch = useAppDispatch()
+  const targetValid = useAppSelector((state) => selectRegexByIdAndField(state.regexes, regexId, "targetValid")) as boolean | null
   
   /* useEffect(() => {
     runRegex(target)
   },[]) */
     
   useEffect(() => {
-    function handler(event) {
+    function handler(event : MessageEvent) {
       //console.log(event.data)
       if (event.data?.type === "regex-result" && event.data.regexId === regexId && event.data.section === "target") {
         dispatch(updateRegex({ id: regexId, field: "targetValid", data: event.data.result }))
@@ -27,10 +30,10 @@ const TargetRegex = memo(({ regexId, iframeRef }) => {
     return () => window.removeEventListener("message", handler); // cleanup
   }, []);
     
-  const runRegex = (pattern) => {
+  const runRegex = (pattern: string) => {
     
 
-    iframeRef.current.contentWindow.postMessage(
+    iframeRef.current?.contentWindow?.postMessage(
       { type: "regex", pattern, regexId, section: "target" },
       "*"
     );
@@ -38,7 +41,7 @@ const TargetRegex = memo(({ regexId, iframeRef }) => {
    
   
 
-    const onChange = (e) => {
+    const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
       dispatch(updateRegex({ id: regexId, field: "target", data: e.target.value }))
       runRegex(e.target.value)
   
