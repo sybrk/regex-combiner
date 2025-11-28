@@ -21,7 +21,7 @@ const initialState: RegexesState = {
   value: {},
   duplicates: [],
   invalidIds: [],
-  page: 0,
+  page: 1,
   pageSize: 100
 }
 type RegexPayload<K extends keyof RegexRecord = keyof RegexRecord> = {

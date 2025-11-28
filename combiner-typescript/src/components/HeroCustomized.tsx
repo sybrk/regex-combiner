@@ -94,7 +94,7 @@ const HeroCustomized = () => {
   return (
     <>
     <title>Regex Combiner</title>
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
 
       {/* Hero Section */}
       <div className="hero min-h-screen relative overflow-hidden pt-16">
@@ -116,7 +116,7 @@ const HeroCustomized = () => {
               className={""}
             >
               <h1 className="text-7xl font-black mb-6">
-                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                   Regex Combiner
                 </span>
                 <br />

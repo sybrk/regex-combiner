@@ -121,16 +121,17 @@ export const regexParserObj = async (filesArr: File[]): Promise<RegexRecordColle
     regexRules.map((x, i) => {
       //console.log("processing", x)
       const regexId = id
-
-      regexRecordCollection[regexId].file = fileRead.fileName;
-      regexRecordCollection[regexId].description = x.querySelector("Description")?.textContent || "";
-      regexRecordCollection[regexId].ignoreCase = (x.querySelector("IgnoreCase")?.textContent?.toLowerCase() || "false") as "true" | "false";
-      regexRecordCollection[regexId].source = x.querySelector("RegExSource")?.textContent ?? "";
-      regexRecordCollection[regexId].sourceValid = null;
-      regexRecordCollection[regexId].target = x.querySelector("RegExTarget")?.textContent ?? "";
-      regexRecordCollection[regexId].targetValid = null;
-      regexRecordCollection[regexId].condition = (x.querySelector("RuleCondition")?.textContent || "TargetAndSource") as "TargetAndSource" | "TargetNotSource" | "SourceNotTarget" | "SourceOnly" | "TargetOnly" | "DifferentCount" | "GroupedSourceNotTarget" | "GroupedTargetAndSource";
-      regexRecordCollection[regexId].hasIssues = null;
+      regexRecordCollection[regexId] = {
+        file : fileRead.fileName,
+        description: x.querySelector("Description")?.textContent || "",
+        ignoreCase: (x.querySelector("IgnoreCase")?.textContent?.toLowerCase() || "false") as "true" | "false",
+        source: x.querySelector("RegExSource")?.textContent ?? "",
+        sourceValid: null,
+        target: x.querySelector("RegExTarget")?.textContent ?? "",
+        targetValid: null,
+        condition: (x.querySelector("RuleCondition")?.textContent || "TargetAndSource") as "TargetAndSource" | "TargetNotSource" | "SourceNotTarget" | "SourceOnly" | "TargetOnly" | "DifferentCount" | "GroupedSourceNotTarget" | "GroupedTargetAndSource",
+        hasIssues: null
+      };
       id++
     });
   }

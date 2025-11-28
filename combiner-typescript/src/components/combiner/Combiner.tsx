@@ -11,6 +11,10 @@ import RegexFile from '../RegexFile';
 import Description from '../Description';
 import IgnoreCase from '../IgnoreCase';
 import Condition from '../Condition';
+import SourceRegex from '../SourceRegex';
+import TargetRegex from '../TargetRegex';
+import ScrollToBottom from '../ScrollToBottom';
+import ScrollToTop from '../ScrollToTop';
 
 
 
@@ -91,6 +95,7 @@ function Combiner() {
     //const files = document.getElementById("regexfiles").files
     
     setWaitingMessage("Importing Regexes")
+    openModal()
     const result = await regexParserObj(files);
 
     await batchValidate(result)
@@ -190,7 +195,7 @@ function Combiner() {
             <button className={"join-item btn " + (page === 1 && "btn-disabled")}
               onClick={() => dispatch(setPage(page - 1))}
             >«</button>
-            <button className="join-item btn">{page.toString() + (totalPages > 0 && (" / " + totalPages))}</button>
+            <button className="join-item btn">{totalPages > 0 ? ( page.toString() + " / " + totalPages.toString()) : page}</button>
             <button className={"join-item btn " + ((page === totalPages || totalPages == 0) && "btn-disabled")}
               onClick={() => dispatch(setPage(page + 1))}
             >»</button>
