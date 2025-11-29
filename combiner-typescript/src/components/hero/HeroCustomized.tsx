@@ -94,6 +94,7 @@ const HeroCustomized = () => {
   return (
     <>
     <title>Regex Combiner</title>
+    <div className='hidden bg-primary bg-secondary bg-accent bg-info text-primary-content text-secondary-content text-accent-content text-info-content badge-secondary badge-accent badge-info'>hidden</div>
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
 
       {/* Hero Section */}

@@ -76,20 +76,21 @@ export const generateIdFiveChar = (): string => {
 }
 
 export const newRegexFile = (): Document => {
-  const xmlString = `<?xml version="1.0" encoding="utf-8" standalone="yes"?><SettingsBundle xmlns:ns1="http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><SettingsGroup Id="QAVerificationSettings"></SettingsGroup></SettingsBundle>`;
+  const xmlString = `<?xml version="1.0" encoding="utf-8"?><SettingsBundle><SettingsGroup Id="QAVerificationSettings"><Setting Id="RegExRules">True</Setting></SettingsGroup></SettingsBundle>`;
   const newFile = xmlParser(xmlString);
   return newFile;
 }
 
 export const regexNodeBuilder = (regexObj: RegexRecord, id: string): Element => {
   const settingNode = document.createElementNS("", "Setting");
-  settingNode.setAttribute("Id", id)
-  const regexNode = document.createElementNS(null, "RegExRule");
-  const descriptionNode = document.createElementNS(null, "Description");
-  const caseNode = document.createElementNS(null, "IgnoreCase");
-  const sourceNode = document.createElementNS(null, "RegExSource");
-  const targetNode = document.createElementNS(null, "RegExTarget");
-  const conditionNode = document.createElementNS(null, "RuleCondition");
+  settingNode.setAttribute("Id", "RegExRules" + id)
+  const regexNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RegExRule");
+  regexNode.setAttribute("xmlns:i", "http://www.w3.org/2001/XMLSchema-instance");
+  const descriptionNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "Description");
+  const caseNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "IgnoreCase");
+  const sourceNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RegExSource");
+  const targetNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RegExTarget");
+  const conditionNode = document.createElementNS("http://schemas.datacontract.org/2004/07/Sdl.Verification.QAChecker.RegEx", "RuleCondition");
   descriptionNode.textContent = regexObj.description;
   caseNode.textContent = regexObj.ignoreCase;
   sourceNode.textContent = regexObj.source;
