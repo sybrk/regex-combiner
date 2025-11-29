@@ -117,7 +117,7 @@ export const regexParserObj = async (filesArr: File[]): Promise<RegexRecordColle
 
     regexRules = regexRules.filter(x => /RegExRules\d+$/.test(x.parentElement?.getAttribute('Id') as string))
     //console.log("regexrules", regexRules, "hoo")
-    regexRules.map((x, i) => {
+    regexRules.map((x) => {
       //console.log("processing", x)
       const regexId = id
       regexRecordCollection[regexId] = {

@@ -226,7 +226,7 @@ function Combiner() {
             </thead>
             <tbody>
               {regexes
-                ? regexes.map((regex: string, i) => {
+                ? regexes.map((regex: string) => {
                   //console.log("this is rendered again", regex)
                   return (
                     <tr className="" key={regex} data-regex-id={regex}>

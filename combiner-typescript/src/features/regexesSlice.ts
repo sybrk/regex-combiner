@@ -105,7 +105,7 @@ export const regexesSlice = createSlice({
       state.duplicates = allDescriptions.filter((x, i) => x != null && allDescriptions.indexOf(x) !== i)
       
       //reset and start invalidIds
-      state.invalidIds = Object.keys(state.value).filter((x,i) => {
+      state.invalidIds = Object.keys(state.value).filter((x) => {
         if(state.duplicates.includes(state.value[x].description) || !state.value[x].description.length) {
           return x
         }

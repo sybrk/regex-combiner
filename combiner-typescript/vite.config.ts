@@ -8,11 +8,6 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
-  server: {
-    mimeTypes: {
-      'application/wasm': ['wasm']
-    }
-  },
   assetsInclude: ["**/*.zip"],
   base: "/regex-combiner/",
   build: {
