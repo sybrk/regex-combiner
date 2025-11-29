@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import excelFile from "../assets/Regex.Combiner.1.8.xlsm.zip";
+import excelFile from "../../assets/Regex.Combiner.1.8.xlsm.zip";
 import { NavLink } from 'react-router';
-import Footer from './footer/Footer';
+import Footer from '../footer/Footer';
 
 const HeroCustomized = () => {
  

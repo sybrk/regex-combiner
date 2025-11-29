@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./combiner
+        working-directory: ./combiner-typescript
     steps:
      
       - name: Checkout code
@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 18
           cache: "npm"
-          cache-dependency-path: ./combiner/package-lock.json
+          cache-dependency-path: ./combiner-typescript/package-lock.json
 
       
         
@@ -39,4 +39,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./combiner/dist   # change to ./build if using CRA
+          publish_dir: ./combiner-typescript/dist   # change to ./build if using CRA
